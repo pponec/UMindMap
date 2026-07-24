@@ -14,117 +14,68 @@ Suggested tags: #showdev #javascript #productivity #opensource
 
 <div style="margin-top: 10px; margin-left: 10px; width: 800px;">
 
-# UMind: a lightweight mind-mapping app, told through planning a trip
+# UMind: Write mind maps as a list
 
-A mind map is a visual tool for organizing thoughts, for planning and for learning
-more effectively: instead of writing long stretches of prose it uses a tree structure.
-Everything starts with a central topic, out of which grow the main branches standing
-for the key areas, and those in turn split into more detailed notes, ideas or
-examples. This style naturally mirrors the way the brain works with associations, so
-you see the connections at a glance and remember the information far more easily.
+**UMind** is a minimalist web app for building mind maps. You write your ideas as a plain nested outline and turn them into a clean SVG mind map with a single click. Everything runs locally in your browser—no account, no dependencies—and your data never leaves your local browser.
 
-**UMind** is a small application for writing such a tree down. Each node holds a short
-title, the kind you can read at a glance, and optionally a longer description as well:
-a paragraph of reasoning, a table of prices, a link, a checklist — in short, whatever
-would otherwise end up scribbled in the margin of a sheet of paper and get lost.
+Many mind-mapping apps are built around drawing and dragging nodes around by hand. UMind takes the opposite path. You focus on the content and the structure first, and only then does the app build the graph for you automatically. There's no node placement to fuss over and no styling to tweak. As a walkthrough, let's plan a simple example: a weekend trip.
 
-The whole application is a static web page: a handful of HTML, JavaScript and CSS
-files, no build, no dependencies. There is no server backend and no telemetry, so
-nothing you type ever leaves your computer. That has two pleasant consequences.
-Nothing needs to be installed — either you open the page on the web, or you copy the
-folder of files onto your own web space, a company drive or a USB stick, and the app
-works offline from then on. And nobody has to register anywhere: no account, no
-password, no confirmation email — there is no server that could hold an account in
-the first place.
+---
 
-Maps are auto-saved into the browser's own storage (`localStorage`) as you type, which
-means they live in one browser on one computer; clear that browser's site data and the
-maps go with it. That is what the *Save* button is for: it writes the whole document
-into a plain `.json` file that belongs to you, and *Open* reads it back — on another
-computer, if you like.
+A mind map is a visual tool for organizing ideas, planning, and learning more effectively. Instead of long, linear prose, it uses a tree structure. Everything starts with a central topic, out of which grow the main branches that stand for the key areas, and those in turn split into specific notes, ideas, or examples. This way of working closely matches how we naturally think—through connections and associations—so it's easier to keep the big picture in view and to remember the information.
 
-The app can also be run locally, without the internet. The project contains two helper
-scripts that start a small web server: one needs Python 3 (`python3 run.py`),
-the other Java 17+ (`java Run.java`); both then serve the page at
-`http://localhost:8000/`. Opening `index.html` straight from disk over `file://` works
-too, but some browsers switch `localStorage` off there and the map will not save
-itself — which is why the local server is the better choice.
+**UMind** is a small app for building exactly these kinds of tree structures. Each node holds a short title and, optionally, a longer description as well: a paragraph of notes, a table, a link, a checklist, or anything else that would otherwise end up in a separate document or a sticky note.
 
-When writing, the keyboard comes first. <kbd>Enter</kbd> creates the next node on the
-same level, <kbd>Tab</kbd> nests one level deeper and <kbd>Shift</kbd>+<kbd>Tab</kbd>
-brings you back up; <kbd>Alt</kbd>+<kbd>Enter</kbd> opens the dialog with the detailed
-description of the currently selected node. The mouse is handy for dragging a whole
-branch somewhere else (by the grip on the node's left edge) or for folding away one
-that is finished. The content of the map is written in editing mode, and a single
-button (*Show graph*) turns it into a picture in presentation mode.
+The whole application is a static web page made of a handful of HTML, JavaScript, and CSS files. It needs no build step, no dependencies, and no server backend. There's no telemetry, and everything happens locally in your browser, so nothing you type ever leaves your computer.
+
+Because of that, there's nothing to install. You can use the publicly hosted version, or copy the app onto your own website, a company server, or a USB drive. It works without an internet connection too. And since there's no server, there's no account to create and no passwords or sign-ups to deal with.
+
+Maps are saved continuously into `localStorage`, so they stay in one specific browser on one specific computer. The **Save** button writes the whole document into a plain `.json` file that you can archive, share, or open on another device with the **Open** button.
+
+The app can also be run locally. The project includes two simple helper scripts that start a small web server—one uses Python 3 (`python3 run.py`), the other Java 17+ (`java Run.java`). Both serve the app at `http://localhost:8000/`. Opening `index.html` directly over `file://` often works, but some browsers restrict `localStorage` in that mode, so using a local server is more reliable.
+
+When you work, the keyboard comes first. You create a new node at the same level with <kbd>Enter</kbd>, go one level deeper with <kbd>Tab</kbd>, and come back up with <kbd>Shift</kbd>+<kbd>Tab</kbd>. You open the dialog with the detailed description using <kbd>Alt</kbd>+<kbd>Enter</kbd>. The mouse is mainly for moving branches around or collapsing them. Content is created in editing mode, and a single click on **Show graph** turns it into a picture. The app's interface is in English, as you can see in the images below.
 
 ## Editing mode: how a plan takes shape
 
 ![UMind in editing mode: the trip outline on the left, the description of the selected node on the right](img-edit.png)
 
-Suppose we are planning a weekend away with the team, but none of the details are
-settled yet. The destination becomes the root of the mind map. Right away we can also
-write down a few basic questions we want answered: how do we get there, where do we
-sleep, what do we want to see, where do we eat, and what has to be done before we
-leave. It takes only a moment, but it gives the map its shape; every answer we find
-later already has its place in it.
+Imagine we're planning a weekend trip with the team, but none of the details are settled yet. The destination becomes the root of the map. Right under it we add the basic questions: how do we get there, where do we sleep, what do we want to see, where do we eat, and what needs to be arranged before we leave. In just a few minutes we have the skeleton of the whole map, and every other piece of information now has its place.
 
-Answers usually arrive out of order. A colleague mentions that the old bridge is worth
-seeing at sunrise — so a child of *What to see* appears, and the reason for sunrise in
-particular, which is the part most often forgotten, goes into its description.
-Comparing the train, the night bus and the flight ends up as a small table in the
-description of *Getting there*, together with the one sentence that settles it: the
-train wins because it runs city center to city center. A week later the table is still
-in place, so nobody has to re-open five tabs to remember why the €19 night bus was
-rejected.
+Answers arrive gradually, and often in random order. A colleague recommends the old bridge at sunrise, so a new node appears under *What to see*, and its description captures the reason it's worth seeing in the morning specifically.
 
-The outline itself keeps moving all the while. *Beer garden by the river* first shows
-up under the sights and quietly migrates to *Food & drink*;
-<kbd>Alt</kbd>+<kbd>↑</kbd> reorders nodes on the same level the moment it turns out
-food matters more than castles; and a finished branch can be folded away to give room
-to the unfinished ones. The titles stay skimmable, the research stays within reach,
-and the plan stops living in six places at once.
+A comparison of the train, the night bus, and the flight can live as a small table in the description of the *Getting there* node, together with a short conclusion: the train wins because it runs city center to city center. A week later, nobody has to reopen a bunch of tabs to remember why the other option was rejected.
 
-## Presentation mode: the same document as a picture
+Meanwhile, the outline can keep changing. *Beer garden by the river* first shows up among the sights and later moves under *Food & drink*. The keys <kbd>Alt</kbd>+<kbd>↑</kbd> and <kbd>Alt</kbd>+<kbd>↓</kbd> let you reorder nodes, finished branches can be collapsed, and you can focus only on the parts still in progress. The titles stay easy to scan, all the related information is in one place, and the plan doesn't scatter across several different documents.
+
+## Presentation mode: the same document as a clean graph
 
 ![The same map in presentation mode: the root in the center, branches to both sides, descriptions drawn as notes](img-graph.png)
 
-From raw text notes, one button then produces a tidy graph. The main topic sits in the
-middle, the related branches are spread evenly on both sides, and the detailed notes
-are drawn next to the nodes they belong to — those can be formatted with basic Markdown
-syntax. The layout is computed by the app, so there is nothing left to drag into place.
-The finished graph can be downloaded as a single SVG file that opens in any browser,
-phone included.
+With a single click, the text outline turns into a clean mind map. The main topic stays in the center, the branches are laid out automatically on both sides, and the detailed notes appear next to their nodes—formatted with basic Markdown.
 
-With colleagues you can then share either the finished picture, or the data itself in
-the plain-text JSON format, which everyone can go on editing in their own copy of the
-app. Such a file can be emailed or kept in a Git repository. And if you host the app
-yourself — for free on GitHub Pages, say — you only drop `trip.json` next to the page,
-and anyone can open the map as a picture through the address `…/?trip.json` alone, with
-nothing to install.
+The layout is computed by the app, so there's no need to move individual nodes by hand. The resulting map can be downloaded as a single SVG file that opens without any trouble in a regular browser or on a phone.
 
-Sharing a map by a public address is safe by the very nature of the web: the app is only
-HTML, CSS and JavaScript running in a browser tab, and that has — and by design cannot
-have — any control over the visitor's computer; it does not read their files, run
-programs or quietly send anything anywhere. A static host such as GitHub Pages runs none
-of your code either, it just hands out the finished files. So a shared map can do one
-single thing: show itself. Anyone who wants to edit it clicks *Edit map* and gets their
-own copy in their browser, while the shared file stays untouched.
+With colleagues, you can share either the finished picture or the source JSON file directly, which each person can open and edit in their own copy of the app. The file can be emailed or stored in a Git repository.
 
-## What it adds up to
+If you host UMind yourself—for free on GitHub Pages, for example—you just drop the map file into the `data/` folder next to the app. The map can then be opened directly through the address `...?name.json`, with nothing for the visitor to install. That's exactly how the sample trip map from this article works; you can open it at `https://pponec.github.io/UMind/?demo-trip.json`.
 
-The end goal is not the mind-map picture, but the decision. UMind is built on exactly
-that idea: the outline is where the thinking happens, the picture is what gets handed
-over, and both are files you own. No account to create, no service to trust, nothing to
-install, and nothing that stops working when some company changes its plans.
+Sharing is safe by the very way the app works. UMind is only HTML, CSS, and JavaScript running in a browser. It has no access to other files and runs no programs on the visitor's computer. On top of that, a static host such as GitHub Pages runs no code on the server—it only serves static files. So a shared map can do exactly one thing: display its content. If someone wants to edit it, they click **Edit map** and get their own copy in their browser.
 
-If you would like to try it, the guided welcome map is at
-[pponec.github.io/UMind/?welcome](https://pponec.github.io/UMind/?welcome) and the
-source code — plain JavaScript, no framework, no build, Apache 2.0 — is on
-[GitHub](https://github.com/pponec/UMind).
+## Summary
 
-Try it on the first plan that is sitting on your desk right now — a weekend away, some
-research, a talk to prepare. Before you have it fully assembled, you may find that for
-the first time in a long while you are not missing a single tab.
+The goal isn't to make a pretty picture, but to reach a better decision.
+
+UMind is built on a simple idea: the outline is where ideas take shape, and the graph is how you present them. Both are files that stay in your hands. No account, no cloud service, no installation, and no dependence on whether some online service still exists a few years from now.
+
+If you'd like to try UMind, the ready-made welcome map is at:
+
+https://pponec.github.io/UMind/?welcome
+
+The project's source code (plain JavaScript, no frameworks or build step, Apache 2.0 license) is on GitHub:
+
+https://github.com/pponec/UMind
+
+Try using it to plan your next trip, prepare a talk, or do some research. You might find that, for once, a single document is all you need instead of a pile of open tabs.
 
 </div>

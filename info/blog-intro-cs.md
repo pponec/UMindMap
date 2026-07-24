@@ -42,7 +42,7 @@ Rozvržení počítá aplikace automaticky, takže není potřeba ručně přeso
 
 S kolegy můžete sdílet buď hotový obrázek, nebo přímo zdrojový soubor JSON, který si každý otevře a upraví ve své vlastní kopii aplikace. Soubor lze poslat e-mailem nebo uložit do Git repozitáře.
 
-Pokud si UMind hostujete sami – například zdarma na GitHub Pages – stačí ponechat soubor `vylet.json` vedle aplikace. Mapu pak lze otevřít přímo pomocí adresy `...?vylet.json`, aniž by návštěvník cokoli instaloval.
+Pokud si UMind hostujete sami – například zdarma na GitHub Pages – stačí soubor s mapou umístit do složky `data/` vedle aplikace. Mapu pak lze otevřít přímo pomocí adresy `...?nazev.json`, aniž by návštěvník cokoli instaloval. Přesně tak funguje i ukázková mapa výletu z tohoto článku, kterou si můžete otevřít na adrese `https://pponec.github.io/UMind/?demo-trip.json`.
 
 Sdílení je bezpečné už z principu fungování aplikace. UMind tvoří pouze HTML, CSS a JavaScript běžící v prohlížeči. Nemá přístup k cizím souborům ani nespouští žádné programy na počítači návštěvníka. Statický hosting, například GitHub Pages, navíc žádný kód na serveru nevykonává – pouze poskytuje statické soubory. Sdílená mapa tedy umí jedinou věc: zobrazit svůj obsah. Pokud ji chce někdo upravit, klikne na **Edit map** a vytvoří si vlastní kopii ve svém prohlížeči.
 
