@@ -42,7 +42,7 @@ Rozvržení počítá aplikace automaticky, takže není potřeba ručně přeso
 
 S kolegy můžete sdílet buď hotový obrázek, nebo přímo zdrojový soubor JSON, který si každý otevře a upraví ve své vlastní kopii aplikace. Soubor lze poslat e-mailem nebo uložit do Git repozitáře.
 
-Pokud si UMind hostujete sami – například zdarma na GitHub Pages – stačí soubor s mapou umístit do složky `data/` vedle aplikace. Mapu pak lze otevřít přímo pomocí adresy `...?nazev.json`, aniž by návštěvník cokoli instaloval. Přesně tak funguje i ukázková mapa výletu z tohoto článku, kterou si můžete otevřít na adrese `https://pponec.github.io/UMind/?demo-trip.json`.
+Pokud si UMind hostujete sami – například zdarma na GitHub Pages – stačí soubor s mapou umístit do složky `data/` vedle aplikace. Mapu pak lze otevřít přímo pomocí adresy `...?nazev.json`, aniž by návštěvník cokoli instaloval. Přesně tak funguje i ukázková mapa výletu z tohoto článku, kterou si můžete otevřít na adrese [pponec.github.io/UMind/?demo-trip.json](https://pponec.github.io/UMind/?demo-trip.json).
 
 Sdílení je bezpečné už z principu fungování aplikace. UMind tvoří pouze HTML, CSS a JavaScript běžící v prohlížeči. Nemá přístup k cizím souborům ani nespouští žádné programy na počítači návštěvníka. Statický hosting, například GitHub Pages, navíc žádný kód na serveru nevykonává – pouze poskytuje statické soubory. Sdílená mapa tedy umí jedinou věc: zobrazit svůj obsah. Pokud ji chce někdo upravit, klikne na **Edit map** a vytvoří si vlastní kopii ve svém prohlížeči.
 
@@ -52,12 +52,12 @@ Cílem není vytvořit hezký obrázek, ale dojít k lepšímu rozhodnutí.
 
 UMind staví na jednoduché myšlence: osnova je místo, kde vznikají nápady, graf je způsob jejich prezentace. Obojí tvoří soubory, které zůstávají ve vašich rukou. Bez účtu, bez cloudové služby, bez instalace a bez závislosti na tom, jestli nějaká online služba bude existovat i za několik let.
 
-Pokud si chcete UMind vyzkoušet, připravená uvítací mapa je na adrese:
+Pokud si chcete UMind vyzkoušet, připravená uvítací mapa je na internetové adrese:
 
-https://pponec.github.io/UMind/?welcome
+[pponec.github.io/UMind/?welcome](https://pponec.github.io/UMind/?welcome)
 
 Zdrojové kódy projektu (čistý JavaScript, bez frameworků a buildu, licence Apache 2.0) najdete na GitHubu:
 
-https://github.com/pponec/UMind
+[github.com/pponec/UMind](https://github.com/pponec/UMind)
 
 Zkuste si v něm naplánovat příští výlet, připravit přednášku nebo udělat rešerši. Možná zjistíte, že vám poprvé stačí jediný dokument místo několika otevřených záložek.

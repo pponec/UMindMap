@@ -58,7 +58,7 @@ The layout is computed by the app, so there's no need to move individual nodes b
 
 With colleagues, you can share either the finished picture or the source JSON file directly, which each person can open and edit in their own copy of the app. The file can be emailed or stored in a Git repository.
 
-If you host UMind yourself—for free on GitHub Pages, for example—you just drop the map file into the `data/` folder next to the app. The map can then be opened directly through the address `...?name.json`, with nothing for the visitor to install. That's exactly how the sample trip map from this article works; you can open it at `https://pponec.github.io/UMind/?demo-trip.json`.
+If you host UMind yourself—for free on GitHub Pages, for example—you just drop the map file into the `data/` folder next to the app. The map can then be opened directly through the address `...?name.json`, with nothing for the visitor to install. That's exactly how the sample trip map from this article works; you can open it at [pponec.github.io/UMind/?demo-trip.json](https://pponec.github.io/UMind/?demo-trip.json).
 
 Sharing is safe by the very way the app works. UMind is only HTML, CSS, and JavaScript running in a browser. It has no access to other files and runs no programs on the visitor's computer. On top of that, a static host such as GitHub Pages runs no code on the server—it only serves static files. So a shared map can do exactly one thing: display its content. If someone wants to edit it, they click **Edit map** and get their own copy in their browser.
 
@@ -70,11 +70,11 @@ UMind is built on a simple idea: the outline is where ideas take shape, and the 
 
 If you'd like to try UMind, the ready-made welcome map is at:
 
-https://pponec.github.io/UMind/?welcome
+[pponec.github.io/UMind/?welcome](https://pponec.github.io/UMind/?welcome)
 
 The project's source code (plain JavaScript, no frameworks or build step, Apache 2.0 license) is on GitHub:
 
-https://github.com/pponec/UMind
+[github.com/pponec/UMind](https://github.com/pponec/UMind)
 
 Try using it to plan your next trip, prepare a talk, or do some research. You might find that, for once, a single document is all you need instead of a pile of open tabs.
 
