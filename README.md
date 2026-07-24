@@ -69,7 +69,7 @@ The rendering engine automatically optimizes the layout:
   the project directly from GitHub Pages.
 - **Nothing new to learn.** If you can write a bulleted list, you already know
   how to use UMind.
-- **No lock-in, no bloat.** Fewer than 2,800 lines of vanilla JavaScript, zero
+- **No lock-in, no bloat.** About 3,000 lines of vanilla JavaScript, zero
   dependencies, Apache 2.0 licensed.
 
 ## Desktop first
@@ -250,7 +250,7 @@ This is exactly what GitHub Pages publishes when configured with
   No optional chaining or other ES2020+ syntax is required.
 
 - **Runs in all modern evergreen browsers.** Chrome/Edge 105+, Safari 15.4+
-  and Firefox 121+. The practical limitations come from CSS `:has()` and
+  and Firefox 118+. The practical limitations come from CSS masks and
   Pointer Events rather than JavaScript itself.
 
 - **Native file saving where available.** Chromium browsers use the File System
