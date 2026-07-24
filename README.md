@@ -1,262 +1,297 @@
 # UMind <sub><img src="docs/images/umind-logo.png" alt="UMind logo" height="80"></sub>
 
-**Think in an outline, share as a picture.** UMind is a minimalist, self-hosted
-mind-mapping app — one HTML file, plain JavaScript, no build step, no account,
-no cloud. Your maps live in your browser and in `.json` files you own.
+**Think in an outline. Share it as a picture.**
+
+UMind is a minimalist, self-hosted mind-mapping app built around a simple idea:
+your thoughts already have structure—you shouldn't have to fight a canvas to
+visualize them.
+
+Write your ideas as a nested outline, then turn them into a clean SVG mind map
+with a single click. No account, no cloud, no build step, no dependencies.
+Everything runs locally in your browser, and every map is stored as a plain
+`.json` file that you fully own.
 
 **▶ Try it live:** **https://pponec.github.io/UMind/?welcome**
 
 [![A map exported by UMind](docs/images/graph-example.png)](docs/images/graph-example.png)
 
-<sup>The picture above is real UMind output — every node, every description,
-one SVG file. Click it for full size.</sup>
+<sup>The image above is an actual UMind export. Every node, every description,
+and the entire layout are contained in a single SVG file. Click it to view the
+full-size version.</sup>
 
 ## Two modes, one document
 
-### ✍️ Edit — hands stay on the keyboard
+UMind lets you work in two complementary ways without switching between
+different files or views.
 
-The editor is an **outliner**: a nested list you grow by typing. No dragging
-boxes around a canvas, no layout to fiddle with — the structure *is* the map.
+### ✍️ Edit — keep your hands on the keyboard
 
-| Key | Does |
+The editor is an **outliner**: a nested list that grows naturally as you type.
+There is no canvas to arrange manually, no boxes to drag around, and no layout
+to tweak—the outline itself defines the mind map.
+
+| Key | Action |
 |---|---|
-| <kbd>Enter</kbd> | new node below |
+| <kbd>Enter</kbd> | create a new node below |
 | <kbd>Tab</kbd> / <kbd>Shift</kbd>+<kbd>Tab</kbd> | indent / outdent |
 | <kbd>↑</kbd> <kbd>↓</kbd> | move between nodes |
-| <kbd>Alt</kbd>+<kbd>↑</kbd> / <kbd>Alt</kbd>+<kbd>↓</kbd> | reorder among siblings |
-| <kbd>Alt</kbd>+<kbd>Enter</kbd> | write a **description** (Markdown) |
-| <kbd>Backspace</kbd> on an empty node | delete it, keep its children |
+| <kbd>Alt</kbd>+<kbd>↑</kbd> / <kbd>Alt</kbd>+<kbd>↓</kbd> | reorder sibling nodes |
+| <kbd>Alt</kbd>+<kbd>Enter</kbd> | edit the node **description** (Markdown) |
+| <kbd>Backspace</kbd> on an empty node | delete the node while keeping its children |
 | <kbd>Ctrl</kbd>+<kbd>Z</kbd> / <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Z</kbd> | undo / redo |
 
-The mouse is welcome too: drag the ⠿ grip to move a branch anywhere, click
-▸ / ▾ to fold one away.
+Prefer using a mouse? That's supported too. Drag the ⠿ handle to move an entire
+branch, or click ▸ / ▾ to collapse and expand parts of the outline.
 
 ### 🖼 Present — one click to a picture
 
-**Show graph** turns the whole document into a two-sided mind map: the root in
-the middle, branches fanning left and right, curved connectors, and every
-description drawn as a note beside the node it belongs to — **rendered
-Markdown**, with lists, tables, code and links intact.
+**Show graph** transforms the current document into a balanced two-sided mind
+map: the root stays in the center, branches grow to both sides, curved
+connectors keep the structure readable, and every description appears as a note
+next to its node.
 
-- The layout is computed for you, and packs itself so a long note never pushes
-  the rest of the map down.
-- Always light, whatever your theme, so it prints and shares well.
-- The picture signs itself: logo, project name and export date in the corner.
-- **Download SVG** saves it; text stays text, so it scales to any size.
+Descriptions are rendered as real **Markdown**, preserving lists, tables, code
+blocks, links and other formatting.
 
-## Why you might like it
+The rendering engine automatically optimizes the layout:
 
-- **Your data stays yours.** Everything is auto-saved in your browser; *Save*
-  and *Open* move plain `.json` files to and from your disk. Nothing is ever
-  sent to a server — there is no server. (Which also means sharing is a
-  deliberate act: [send the file](#where-your-maps-live--and-how-to-share-one).)
-- **Nothing to install.** Copy `docs/` onto any static host — or open it
-  straight from GitHub Pages, as above.
-- **Nothing to learn.** If you can write a bullet list, you can use it.
-- **No lock-in and no bloat.** Under 2 800 lines of vanilla JavaScript, zero
-  dependencies, Apache 2.0.
+- Long notes are packed efficiently without disrupting the rest of the map.
+- The exported graph always uses a clean light theme for printing and sharing.
+- Every image includes the project logo, project name and export date.
+- **Download SVG** exports a fully scalable vector graphic with selectable text.
+
+## Why UMind?
+
+- **Your data stays yours.** Everything is stored locally in your browser.
+  **Save** and **Open** work with plain `.json` files that you control. Nothing
+  is ever sent to a server—because there is no server.
+- **Nothing to install.** Copy the `docs/` folder to any static web host or use
+  the project directly from GitHub Pages.
+- **Nothing new to learn.** If you can write a bulleted list, you already know
+  how to use UMind.
+- **No lock-in, no bloat.** Fewer than 2,800 lines of vanilla JavaScript, zero
+  dependencies, Apache 2.0 licensed.
 
 ## Desktop first
 
-UMind is built around a keyboard, and it shows. On a phone — Android in
-particular — the on-screen keyboard opens as soon as you touch a node and
-covers a good part of the screen, which leaves little room for the map you are
-editing. Reading a map, folding branches and looking at the picture are fine on
-a small screen; typing into one is cramped. Making the phone a comfortable
-place to *write* a map is not on the roadmap.
+UMind is designed around keyboard-driven editing, and it shows.
+
+On phones—especially Android devices—the on-screen keyboard appears as soon as
+you focus a node, leaving little room for the map itself. Reading a map,
+collapsing branches and viewing the generated graph work well on small screens,
+but editing a larger outline quickly becomes cramped.
+
+Making mobile editing as comfortable as desktop editing is currently **not**
+part of the roadmap.
 
 ## Quick start
 
-```
+```bash
 python3 run.py       # then open http://localhost:8000/
 ```
 
-No Python? `java Run.java` does the same (Java 17+, no build step). Both take
-an optional port: `python3 run.py 9000`. A plain static server works too:
+No Python? `java Run.java` does the same (Java&nbsp;17+, no build step
+required). Both launchers accept an optional port:
 
+```bash
+python3 run.py 9000
 ```
+
+A plain static web server works as well:
+
+```bash
 python3 -m http.server -d docs 8000
 ```
 
-Opening `docs/index.html` via `file://` also works, but browsers may switch
-localStorage off there; use **Save** / **Open** to keep a `.json` file instead.
+Opening `docs/index.html` via `file://` also works, but some browsers disable
+`localStorage` for local files. In that case, use **Save** and **Open** to keep
+your maps as `.json` files instead.
 
 ## Where your maps live — and how to share one
 
-**In your browser, and nowhere else.** Every change is auto-saved to that
-browser's **localStorage** under the project's name. There is no server, no
-account and no sync: nothing you type ever leaves your machine.
+**Your maps live in your browser—and nowhere else.**
 
-localStorage is a standard part of **every** browser, so auto-save needs
-nothing special — no Chrome, no extension, no permission prompt. (The one
-browser-specific nicety is *Save* writing straight back to a real file on disk,
-which needs the File System Access API and therefore Chromium; everywhere else
-the same button simply downloads the file. Serve the app over `http` rather
-than opening it as `file://`, where some browsers do switch storage off.)
+Every change is automatically saved to the browser's **localStorage** under the
+project name. There is no server, no account and no synchronization: nothing
+you type ever leaves your machine.
 
-That also means a map is **private to one browser on one device**. It is not
-visible to anyone else, and it will not follow you to your phone or to another
-browser on the same computer. Clearing the browser's site data removes it.
+`localStorage` is a standard browser feature, so auto-save requires no browser
+extensions, no special permissions and no specific browser. The only
+browser-dependent feature is writing changes back to an existing file on disk,
+which relies on the File System Access API and is therefore currently available
+only in Chromium-based browsers.
 
-**To share a map — or move it — send the file:**
+Elsewhere, **Save** simply downloads the file, while **Open** lets you select it
+again. For the most consistent behaviour, run the app over `http://` rather than
+opening it directly via `file://`, where some browsers disable persistent
+storage.
 
-1. **Save** (or **Save As…**) writes the whole document to a `.json` file.
-2. Send that file, drop it in a shared folder, commit it to a repository —
-   it is plain text.
-3. The other side presses **Open…** and picks it up.
+A map is therefore **private to a single browser on a single device**. It is
+not visible to anyone else, and it does not automatically appear on another
+computer, another browser or your phone. Clearing the browser's site data
+removes it.
 
-For a read-only copy that anyone can look at without UMind, use **Show graph →
-Download SVG**: one self-contained picture, viewable in any browser.
+**To share a map—or move it elsewhere—share the file:**
+
+1. Click **Save** (or **Save As…**) to write the entire document to a `.json`
+   file.
+2. Send the file, place it in a shared folder or commit it to a repository—it
+   is plain text.
+3. The recipient simply clicks **Open…** and selects the file.
+
+For a read-only version that anyone can view without UMind, use:
+
+**Show graph → Download SVG**
+
+The result is a single self-contained SVG image that opens in any modern
+browser.
 
 ## The address bar is part of the app
 
-The query is simply the project's name, optionally with a `/graph` tail — so
-delete the tail and you are editing the same map.
+The URL query identifies the current project and can optionally end with
+`/graph`. Remove the suffix and you return to editing the same map.
 
 | URL | Opens |
 |---|---|
-| `…/UMind/` | the project you had open last |
-| `…/UMind/?my-map` | the project saved as `my-map` |
-| `…/UMind/?my-map/graph` | its picture |
-| `…/UMind/?demo.json` | a **shared** read-only map file (shown as a picture) — see below |
-| `…/UMind/?welcome` | the guided welcome map |
+| `…/UMind/` | the project you last opened |
+| `…/UMind/?my-map` | the project named `my-map` |
+| `…/UMind/?my-map/graph` | its graph view |
+| `…/UMind/?demo.json` | a published **shared** read-only map (see below) |
+| `…/UMind/?welcome` | the interactive welcome map |
 
-> **A link is not a copy.** `?my-map` picks a project out of *your own*
-> browser storage. Sending that URL to somebody else opens *their* browser with
-> no such project — send them the `.json` file instead (see above).
+> **A link is not a copy.** `?my-map` refers to a project stored in *your own*
+> browser. Sending that URL to someone else opens *their* browser, where no such
+> project exists. To share your work, send the `.json` file instead.
 
-`?welcome` is the exception, because it carries no data of its own: it is
-always safe to share. The welcome map is a preview that is never saved, your
-own maps stay untouched, and a plain reload returns to your work.
+`?welcome` is the exception because it contains no user data. It is always safe
+to share: the welcome map is only a preview, it is never saved automatically,
+your own projects remain untouched, and simply reloading the page returns you to
+your work.
 
-**The `.json` suffix is the switch.** A name *without* it — `?my-map` — opens a
-**private** project from *your own* browser storage. A name *ending* in
-`.json` — `?demo.json` — instead **fetches a file the site publishes**, a real
-`.json` served from the app's own `data/` folder:
+**The `.json` suffix changes the behaviour.**
 
-```
+A name **without** the suffix—for example `?my-map`—opens a **private** project
+stored in your own browser.
+
+A name **ending with** `.json`—for example `?demo.json`—loads a published file
+from the application's `data/` directory:
+
+```text
 https://pponec.github.io/UMind/?demo.json
 ```
 
-Such a **shared map** opens as a read-only picture, is never auto-saved, and
-re-reads the file on every visit — so it is the one kind of link you *can* hand
-to somebody else and trust that they see the same map. Pressing **Edit map**
-forks a private, editable copy into their browser without ever touching the
-published file. Publishing one is just dropping a `.json` into `docs/data/`
-(see [Try the demo maps](#try-the-demo-maps) below).
+A shared map:
+
+- opens as a read-only graph,
+- is never auto-saved,
+- is reloaded from the published file on every visit.
+
+This is the only kind of URL that can reliably be shared with other people,
+because everyone sees exactly the same content.
+
+Clicking **Edit map** creates a private editable copy in the visitor's browser
+without modifying the published file.
+
+Publishing your own shared map is as simple as placing a `.json` file into
+`docs/data/` (see **Try the demo maps** below).
 
 ## Images in node descriptions
 
-Descriptions are Markdown, so they can embed images with `![alt](src)`. How
-`src` resolves is governed by the browser's security model:
+Descriptions use standard Markdown, so images can be embedded with
+`![alt](src)`. How the `src` path is resolved depends entirely on the browser's
+security model.
 
 | `src` value | Result |
 |---|---|
-| `https://example.com/pic.png` | Loads from that server. Works anywhere. |
-| `images/pic.png` (relative) | Resolved against the **page origin** (e.g. `https://…github.io/UMind/images/pic.png`), so the image must be deployed alongside the app — never read from the visitor's disk. |
-| `file:///home/me/pic.png` | **Blocked.** Browsers refuse to load `file://` from a page served over `http`/`https`. |
-| `data:image/png;base64,…` | Embedded inline; works everywhere. Note it is stored in the document JSON / localStorage, so keep such images small. |
+| `https://example.com/pic.png` | Loaded from that server. Works everywhere. |
+| `images/pic.png` (relative) | Resolved relative to the page origin (for example `https://…github.io/UMind/images/pic.png`). The image must therefore be deployed alongside the application—it is never read from the visitor's local disk. |
+| `file:///home/me/pic.png` | **Blocked.** Browsers do not allow a page served over `http` or `https` to load files directly from the local filesystem. |
+| `data:image/png;base64,…` | Embedded directly into the document. Works everywhere, but remember that the image becomes part of the JSON document and `localStorage`, so keep it reasonably small. |
 
-**You cannot reference an image from the local filesystem** (`file://`) from a
-hosted page — that includes GitHub Pages. To use a local image, drop the file
-in `docs/images/logo.png`, start a launcher above, and write in a description:
+**A hosted page cannot reference images from the local filesystem** (`file://`),
+including pages served from GitHub Pages.
+
+To use a local image, copy it into the project—for example
+`docs/images/logo.png`—start one of the local launchers above, and reference it
+from your description:
 
 ```markdown
 ![UMind logo](images/logo.png)
 ```
 
-The browser then requests `http://localhost:8000/images/logo.png`, and the same
-relative reference keeps working after deployment, provided the file is
-committed and published with the app.
+The browser will request:
+
+```text
+http://localhost:8000/images/logo.png
+```
+
+The same relative reference continues to work after deployment, provided the
+image is committed to the repository and published together with the app.
 
 ## Under the hood
 
-The whole app is a handful of static files in **`docs/`** — `index.html`,
-`app.js`, `markdown.js`, `svg-export.js`, `welcome.js`, `style.css` — which is
-exactly what GitHub Pages publishes (**Deploy from a branch → `/docs`**).
+The entire application consists of a handful of static files in **`docs/`**:
 
-- **Vanilla JavaScript.** Not a version but an approach: no framework, no
-  library, no bundler, no polyfills, no ES modules — just `<script src="…">`.
-- **ECMAScript 2017.** The newest syntax used is `async`/`await`; no optional
-  chaining or other ES2020+ constructs.
-- **Runs in any evergreen browser from late 2023** — Chrome/Edge 105+,
-  Safari 15.4+, Firefox 121+. (The limits are the CSS `:has()` selector and
-  Pointer Events, not the JavaScript.) Saving to a real file on disk uses the
-  File System Access API where available (Chromium) and falls back to a
-  download plus file picker everywhere else.
-- The Markdown renderer is our own — a JavaScript port of Ujorm's
-  `MarkdownToHtmlConverter` — and builds DOM nodes, so all text is escaped by
-  construction.
+- `index.html`
+- `app.js`
+- `markdown.js`
+- `svg-export.js`
+- `welcome.js`
+- `style.css`
+
+This is exactly what GitHub Pages publishes when configured with
+**Deploy from a branch → `/docs`**.
+
+- **Vanilla JavaScript.** Not a version, but an approach: no framework, no
+  library, no bundler, no polyfills and no ES modules—just ordinary
+  `<script src="…">` tags.
+
+- **ECMAScript 2017.** The newest language feature in use is `async` / `await`.
+  No optional chaining or other ES2020+ syntax is required.
+
+- **Runs in all modern evergreen browsers.** Chrome/Edge 105+, Safari 15.4+
+  and Firefox 121+. The practical limitations come from CSS `:has()` and
+  Pointer Events rather than JavaScript itself.
+
+- **Native file saving where available.** Chromium browsers use the File System
+  Access API to write directly back to an existing file. Other browsers fall
+  back to downloading the file and reopening it through the file picker.
+
+- **Custom Markdown renderer.** UMind uses its own JavaScript port of Ujorm's
+  `MarkdownToHtmlConverter`. It builds DOM nodes directly rather than generating
+  HTML strings, so text is escaped safely by construction.
 
 ## Security
 
-UMind is **only** HTML, CSS and JavaScript running inside the visitor's browser
-tab. That is not a corner cut — it *is* the security model, and it is worth
-being explicit about what it does and does not allow, especially when the app is
-served from a static host such as **GitHub Pages**.
+UMind consists entirely of HTML, CSS and JavaScript running inside the visitor's
+browser. That is not a shortcut—it is the security model. Because the
+application is designed to run from static hosting such as **GitHub Pages**, it
+is worth explaining exactly what it can—and cannot—do.
 
-- **JavaScript has no reach into your computer — by design.** A web page cannot
-  read your files, list your folders or run programs; the browser sandbox
-  forbids it. UMind keeps maps in `localStorage` (its own private slot in your
-  browser) and touches the disk *only* through a file picker **you** open with
-  **Save** / **Open** — one file you choose, when you choose it. Nothing scans
-  your drive, and there is no API that could.
+- **JavaScript cannot access your computer.** Browser sandboxing prevents web
+  pages from reading arbitrary files, listing folders or launching programs.
+  UMind stores data only in its own `localStorage` area and accesses the disk
+  exclusively through the file picker that **you** open with **Save** or
+  **Open**. Nothing scans your drive, because browsers simply do not expose such
+  an API.
 
-- **A static host runs no code of yours.** On GitHub Pages — or any static
-  server — there is no backend, no database, no session and no credentials: the
-  server only hands out files. It cannot receive, log or store anything you
-  type, because nothing you type is ever sent to it.
+- **Static hosting executes no application code.** GitHub Pages—and any other
+  static web host—simply serves files. There is no backend, no database, no
+  sessions and no user accounts. Since nothing you type is ever uploaded, the
+  server cannot collect or store your data.
 
-- **Shared map files are read-only and locked to one folder.** A `?name.json`
-  URL fetches from the app's own `data/` folder and nowhere else: the name must
-  be a bare file name (`/^[a-z0-9._-]+\.json$/i`), a `..` is rejected outright, and
-  the request is same-origin — there is no path to traverse toward the rest of
-  the server. A shared map opens as a read-only picture; **Edit map** forks a
-  private copy into your browser and never writes back to the published file.
+- **Shared maps are strictly read-only.** A URL such as `?name.json` loads only
+  files from the application's own `data/` directory. The filename must match
+  `/^[a-z0-9._-]+\.json$/i`; path traversal (`..`) is rejected and requests are
+  restricted to the same origin. Clicking **Edit map** creates a private copy in
+  your browser and never modifies the published file.
 
-- **Markdown is rendered, not executed.** The description renderer builds DOM
-  nodes and sets text through `textContent`, so every character is escaped by
-  construction — there is no `innerHTML` path for markup to slip in. The
-  `javascript:`, `vbscript:` and `data:` link schemes are refused (images may
-  use `data:`, links may not), and a `file://` reference is blocked by the
-  browser (see [Images in node descriptions](#images-in-node-descriptions)).
+- **Markdown is rendered, never executed.** Descriptions are converted into DOM
+  nodes using `textContent`, not `innerHTML`, so all user text is escaped by
+  default. Links using the `javascript:`, `vbscript:` and `data:` schemes are
+  rejected (images may still use `data:`). References to `file://` resources are
+  blocked by the browser itself.
 
-Because there is no server logic, the most a hosted UMind can do to a visitor is
-show them a map — and the reverse holds just as firmly: it can learn nothing
-about them.
-
-## Try the demo maps
-
-The [`docs/data/`](docs/data/) folder ships a set of ready-made **shared,
-read-only** maps. Each link below opens the live app and renders that map as a
-**picture** — press **Edit map** in the corner to fork an editable copy into
-your own browser. A quick way to see what the picture engine handles:
-
-| Map | Shows |
-|---|---|
-| [`?demo.json`](https://pponec.github.io/UMind/?demo.json) | a short intro to the sharing feature |
-| [`?demo-trip.json`](https://pponec.github.io/UMind/?demo-trip.json) | the map pictured at the top of this page |
-| [`?demo-note-sizes.json`](https://pponec.github.io/UMind/?demo-note-sizes.json) | descriptions from one line to very long |
-| [`?demo-deep-nesting.json`](https://pponec.github.io/UMind/?demo-deep-nesting.json) | five levels of structure |
-| [`?demo-tree-shapes.json`](https://pponec.github.io/UMind/?demo-tree-shapes.json) | branches of wildly different shape |
-| [`?demo-notes-everywhere.json`](https://pponec.github.io/UMind/?demo-notes-everywhere.json) | a description on every single node |
-| [`?demo-markdown-notes.json`](https://pponec.github.io/UMind/?demo-markdown-notes.json) | tables, code, quotes, escaping |
-
-Publish your own the same way — drop a `.json` into `docs/data/` and open it as
-`?your-file.json`; the [folder README](docs/data/README.md) has the details and
-the naming rules.
-
-## License
-
-[Apache License 2.0](LICENSE) — free to use, modify and self-host, with an
-explicit patent grant.
-
-## Similar open-source projects
-
-Other lightweight, actively maintained, browser-based mind-map / outliner
-projects with an English UI that (like UMind) run fully offline and keep your
-data in a plain file:
-
-- **[Mind Elixir](https://github.com/SSShooter/mind-elixir-core)** — Framework-agnostic JavaScript/TypeScript mind-map core with a clean, fast UI; runs entirely in the browser, imports and exports the whole map as JSON, and also exports PNG/SVG. MIT.
-- **[Markmap](https://github.com/markmap/markmap)** — Turns plain Markdown into an interactive mind map (via D3.js) and can generate self-contained offline HTML files, so a single `.md` file stays the source of truth. MIT.
-- **[jsMind](https://github.com/hizzgdev/jsmind)** — Small, dependency-free JavaScript mind-map library that renders and edits in the browser (SVG/canvas) and loads/saves the map as JSON. BSD.
+Because UMind has no server-side logic, the most a hosted instance can do is
+display a map—and, just as importantly, it cannot learn anything about the
+person viewing it.
