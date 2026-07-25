@@ -4,8 +4,8 @@
  * A single-file Java 17 program — no build step, no *.class files. Run it with
  * the source-code launcher:
  *
- *     java Run.java            # serve on http://localhost:8000/
- *     java Run.java 9000       # serve on a custom port
+ *     java run.java            # serve on http://localhost:8000/
+ *     java run.java 9000       # serve on a custom port
  *
  * It is the Java counterpart of run.py: it serves the docs/ directory next to
  * this source file (the same files GitHub Pages publishes; works from any
@@ -27,7 +27,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.CountDownLatch;
 
-public class Run {
+public class run {
 
     /** Port used when no argument is given. */
     private static final int DEFAULT_PORT = 8000;
@@ -59,7 +59,7 @@ public class Run {
             server = HttpServer.create(new InetSocketAddress("127.0.0.1", port), 0);
         } catch (BindException e) {
             System.err.println("Port " + port + " is already in use. Stop the process "
-                    + "using it, or start on another port: java Run.java <port>");
+                    + "using it, or start on another port: java run.java <port>");
             System.exit(1);
             return; // unreachable, but keeps 'server' definitely assigned
         }

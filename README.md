@@ -76,7 +76,7 @@ python3 run.py       # then open http://localhost:8000/
 ```
 
 No Python?
-`java Run.java` does the same (Java 17+, no build step).
+`java run.java` does the same (Java 17+, no build step).
 Both take an optional port: `python3 run.py 9000`.
 A plain static server works too:
 
