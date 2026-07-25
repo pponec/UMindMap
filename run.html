@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="refresh" content="0; url=docs/index.html?welcome">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redirecting…</title>
+    <style>:root{--ink:#1a1a18;--muted:#6b6b65;--accent:#2d5fa6;}body{font-family:system-ui,sans-serif;font-size:15px;line-height:1.75;color:var(--ink);background:#faf9f6;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0;}.box{text-align:center;padding:3rem 2rem;}.label{font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:var(--accent);font-weight:500;margin-bottom:.75rem;}h1{font-size:clamp(1.6rem,4vw,2.4rem);line-height:1.2;margin:0 0 1rem;}p{color:var(--muted);margin:0 0 1.5rem;}a{color:var(--accent);text-decoration:none;border-bottom:1px solid #e8eef8;transition:border-color .2s;}a:hover{border-color:var(--accent);}</style>
+</head>
+<body>
+<div class="box">
+    <div class="label">Redirecting</div>
+    <h1>Redirecting to a new address…</h1>
+    <p>If the page does not load automatically, click
+        <a id="redir-link" href="#">the link →</a>.</p>
+</div>
+<script>
+    const url = document.querySelector('meta[http-equiv="refresh"]').content.replace(/^[^;]*;\s*url=/i, '').trim();
+    document.getElementById('redir-link').href = url;
+    window.location.replace(url);
+</script>
+</body>
+</html>
