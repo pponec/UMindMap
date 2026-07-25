@@ -1,9 +1,8 @@
 # UMind <sub><img src="docs/images/umind-logo.png" alt="UMind logo" height="80"></sub>
 
 **Think in an outline, share as a picture.**
-Write first, arrange never.
 
-UMind is a minimalist, self-hosted mind-mapping application where you **write the map as a nested outline instead of drawing it on a canvas**.
+UMind is a minimalist, self-hosted mind-mapping application where you **write the map as a nested list instead of drawing it on a canvas**.
 The outline directly represents the tree structure: every node has a title and an optional Markdown description.
 From this textual representation, UMind automatically generates a balanced graphical mind map while preserving the order of the nodes.
 One HTML file, plain JavaScript, no build step, no account, no cloud.
