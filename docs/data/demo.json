@@ -1,8 +1,8 @@
 {
   "meta": {
-    "app": "UMind",
+    "app": "UMindMap",
     "version": "1.0.0",
-    "home": "https://github.com/pponec/UMind",
+    "home": "https://github.com/pponec/UMindMap",
     "project": "demo",
     "exported": "2026-07-23 20:00"
   },
@@ -11,7 +11,7 @@
   "rootId": "n_root",
   "root": {
     "id": "n_root",
-    "text": "UMind demo",
+    "text": "UMindMap demo",
     "note": "A **shared** map served from the `data/` folder.\n\nOpen it as `?demo.json` — it shows as a picture and is read-only. Press **Edit map** to fork your own copy.",
     "collapsed": false,
     "children": [

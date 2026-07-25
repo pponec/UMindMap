@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run the UMind app over http (so localStorage auto-save works).
+"""Run the UMindMap app over http (so localStorage auto-save works).
 
 Usage:
     python3 run.py            # serve on http://localhost:8000/
@@ -54,7 +54,7 @@ def main() -> int:
         raise
 
     with httpd:
-        print(f"UMind: {url}  (serving {root})")
+        print(f"UMindMap: {url}  (serving {root})")
         print("Press Ctrl+C to stop.")
         try:
             webbrowser.open(url)

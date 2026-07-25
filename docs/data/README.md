@@ -1,6 +1,6 @@
 # Shared maps (`data/`)
 
-Maps in this folder are **shared, read-only** UMind maps that anyone can open by
+Maps in this folder are **shared, read-only** UMindMap maps that anyone can open by
 URL. They are plain static files — GitHub Pages serves them as-is, no server code.
 
 ## Opening a shared map
@@ -8,7 +8,7 @@ URL. They are plain static files — GitHub Pages serves them as-is, no server c
 Append the **file name (with `.json`)** to the app URL:
 
 ```
-https://pponec.github.io/UMind/?demo.json
+https://pponec.github.io/UMindMap/?demo.json
 ```
 
 - A query **with** `.json` → a shared file from this folder, shown as a **picture**

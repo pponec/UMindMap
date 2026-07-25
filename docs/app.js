@@ -1,6 +1,6 @@
-// UMind (https://pponec.github.io/UMind/) — Apache License 2.0
+// UMindMap (https://pponec.github.io/UMindMap/) — Apache License 2.0
 /*
- * UMind — Phase 0 outliner prototype (vanilla JS, no dependencies).
+ * UMindMap — Phase 0 outliner prototype (vanilla JS, no dependencies).
  *
  * Single source of truth: the `doc` object. `render()` is a pure function of
  * state that rebuilds the DOM. Structural edits mutate `doc`, snapshot for
@@ -19,9 +19,9 @@
 // the released app changes; APP_HOME is the project's home page — the GitHub
 // repository, which carries the app's documentation and a link to run it live,
 // and which the toolbar wordmark links to.
-const APP_NAME = 'UMind';
+const APP_NAME = 'UMindMap';
 const APP_VERSION = '1.0.0';
-const APP_HOME = 'https://github.com/pponec/UMind';
+const APP_HOME = 'https://github.com/pponec/UMindMap';
 
 /* ---------------------------------------------------------------------- */
 /* Data model                                                             */
@@ -833,7 +833,7 @@ detailGrip.addEventListener('pointerup', () => {
 /*      with zero user effort. Reliable when served over http(s) or       */
 /*      localhost; under file:// the origin is opaque and it may not      */
 /*      persist, hence the file layer below.                              */
-/*   2. Explicit Open/Save of a real umind.json file for backup and for   */
+/*   2. Explicit Open/Save of a real umindmap.json file for backup and for   */
 /*      moving a map between machines. Uses the File System Access API on  */
 /*      Chromium; elsewhere (and under file://) it falls back to a         */
 /*      download and a file picker.                                        */
@@ -913,15 +913,15 @@ function loadDocFromText(text, source) {
 // identifier — or 'untitled' when it has none yet. Save / Save As are a
 // separate concern: they EXPORT the project to a file on disk. LAST_KEY records
 // which project to restore on the next visit.
-const PROJECT_PREFIX = 'umind:project:';
-const LAST_KEY = 'umind:last';
+const PROJECT_PREFIX = 'umindmap:project:';
+const LAST_KEY = 'umindmap:last';
 let storageOk = false;
 let saveTimer = null;
 
 /** Detect whether localStorage is usable (may be blocked under file://). */
 function storageAvailable() {
   try {
-    const k = '__umind_test__';
+    const k = '__umindmap_test__';
     localStorage.setItem(k, '1');
     localStorage.removeItem(k);
     return true;
@@ -1010,7 +1010,7 @@ const inIframe = (() => {
 })();
 
 const FILE_TYPES = [
-  { description: 'UMind map', accept: { 'application/json': ['.json'] } },
+  { description: 'UMindMap file', accept: { 'application/json': ['.json'] } },
 ];
 
 /** ASCII slug of the project title, used as the default file name. */
@@ -1345,7 +1345,7 @@ async function showGraph() {
   document.querySelector('.workspace').hidden = true;
   document.querySelector('.help').hidden = true;
   document.getElementById('graph').hidden = false;
-  document.title = (doc.root.text || 'UMind').trim() + ' — graph';
+  document.title = (doc.root.text || 'UMindMap').trim() + ' — graph';
   await whenGraphAssets();
   // The prolog belongs to a standalone file; here the markup is inlined.
   document.getElementById('graph-canvas').innerHTML =
@@ -1377,7 +1377,7 @@ function newFromGraph() {
   document.getElementById('graph').hidden = true;
   document.querySelector('.workspace').hidden = false;
   document.querySelector('.help').hidden = false;
-  document.title = 'UMind — Mind Map Outliner';
+  document.title = 'UMindMap — self-hosted mind map outliner';
   history.replaceState(null, '', location.pathname); // drop ?<map>[/graph]
   newFile();
 }
@@ -1583,7 +1583,7 @@ const forceWelcome = urlTarget.name === WELCOME_KEY;
  */
 async function bootSharedFile(fileName) {
   const bad = (why) => {
-    console.warn('UMind: shared map "' + fileName + '" ' + why);
+    console.warn('UMindMap: shared map "' + fileName + '" ' + why);
     graphView = false;
     document.body.classList.remove('graph-view');
     bootLocal();
@@ -1597,7 +1597,7 @@ async function bootSharedFile(fileName) {
       { cache: 'no-store' });
     if (!res.ok) throw new Error('HTTP ' + res.status);
     const parsed = JSON.parse(await res.text());
-    if (!parsed.root || !parsed.rootId) throw new Error('not a UMind map');
+    if (!parsed.root || !parsed.rootId) throw new Error('not a UMindMap document');
     doc = ensureDocId(parsed);
     doc.isShared = true;                  // read-only preview, never persisted
     currentFileName = baseName(fileName); // the name a fork would take on Edit

@@ -1,8 +1,8 @@
 {
   "meta": {
-    "app": "UMind",
+    "app": "UMindMap",
     "version": "1.0.0",
-    "home": "https://github.com/pponec/UMind",
+    "home": "https://github.com/pponec/UMindMap",
     "project": "demo-markdown-notes",
     "exported": "2026-07-23 16:39"
   },
@@ -33,13 +33,13 @@
       {
         "id": "n_004",
         "text": "Code and links",
-        "note": "A fenced code block keeps its spacing:\n\n```\nfunction renderMarkdown(md) {\n  return html;   // 5 < 6 && \"quoted\"\n}\n```\n\nInline `code`, **bold**, _italic_ and a [link](https://github.com/pponec/UMind).",
+        "note": "A fenced code block keeps its spacing:\n\n```\nfunction renderMarkdown(md) {\n  return html;   // 5 < 6 && \"quoted\"\n}\n```\n\nInline `code`, **bold**, _italic_ and a [link](https://github.com/pponec/UMindMap).",
         "collapsed": false,
         "children": [
           {
             "id": "n_005",
             "text": "A code block in a leaf note",
-            "note": "A fenced code block keeps its spacing:\n\n```\nfunction renderMarkdown(md) {\n  return html;   // 5 < 6 && \"quoted\"\n}\n```\n\nInline `code`, **bold**, _italic_ and a [link](https://github.com/pponec/UMind).",
+            "note": "A fenced code block keeps its spacing:\n\n```\nfunction renderMarkdown(md) {\n  return html;   // 5 < 6 && \"quoted\"\n}\n```\n\nInline `code`, **bold**, _italic_ and a [link](https://github.com/pponec/UMindMap).",
             "collapsed": false,
             "children": []
           }
@@ -61,7 +61,7 @@
           {
             "id": "n_008",
             "text": "Words that cannot break",
-            "note": "Text can also carry things that have nowhere to break:\n\n- a URL: https://github.com/pponec/UMind/blob/main/docs/svg-export.js#L1-L20\n- an identifier: `documentToSvg_placeBubblesAndConnectorCorridors_v2`\n- a path: `/home/user/projects/umind/test/json/05-markdown-notes.json`\n\nThey wrap mid-word rather than sticking out of the bubble.",
+            "note": "Text can also carry things that have nowhere to break:\n\n- a URL: https://github.com/pponec/UMindMap/blob/main/docs/svg-export.js#L1-L20\n- an identifier: `documentToSvg_placeBubblesAndConnectorCorridors_v2`\n- a path: `/home/user/projects/umindmap/test/json/05-markdown-notes.json`\n\nThey wrap mid-word rather than sticking out of the bubble.",
             "collapsed": false,
             "children": []
           },

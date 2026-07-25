@@ -1,8 +1,8 @@
 {
   "meta": {
-    "app": "UMind",
+    "app": "UMindMap",
     "version": "1.0.0",
-    "home": "https://github.com/pponec/UMind",
+    "home": "https://github.com/pponec/UMindMap",
     "project": "demo-deep-nesting",
     "exported": "2026-07-23 16:39"
   },
@@ -129,8 +129,8 @@
       },
       {
         "id": "n_017",
-        "text": "About UMind ℹ️",
-        "note": "UMind is a **free, open-source, self-hosted** mind-mapping app — no account, no cloud, no lock-in.",
+        "text": "About UMindMap ℹ️",
+        "note": "UMindMap is a **free, open-source, self-hosted** mind-mapping app — no account, no cloud, no lock-in.",
         "collapsed": false,
         "children": [
           {
@@ -143,7 +143,7 @@
           {
             "id": "n_019",
             "text": "Source code, issues & contributions",
-            "note": "Browse the code and report a bug at <github.com/pponec/UMind>.",
+            "note": "Browse the code and report a bug at <github.com/pponec/UMindMap>.",
             "collapsed": false,
             "children": []
           }

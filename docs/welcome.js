@@ -1,4 +1,4 @@
-// UMind (https://pponec.github.io/UMind/) — Apache License 2.0
+// UMindMap (https://pponec.github.io/UMindMap/) — Apache License 2.0
 'use strict';
 
 /*
@@ -23,9 +23,9 @@
 (function (global) {
 
   global.WELCOME_TREE = {
-    text: 'Welcome to UMind 🌀',
+    text: 'Welcome to UMindMap 🌀',
     note:
-      '**UMind** is a keyboard-first outliner / mind map — a nested list of ' +
+      '**UMindMap** is a keyboard-first outliner / mind map — a nested list of ' +
       'editable nodes.\n\n' +
       'This is a starter map. Explore the branches below, then press **New** ' +
       'for a blank project or **Open** to load a saved `.json` file. ' +
@@ -98,15 +98,15 @@
         children: [],
       },
       {
-        text: 'About UMind ℹ️',
+        text: 'About UMindMap ℹ️',
         note:
-          'UMind is a **free, open-source, self-hosted** mind-mapping app — ' +
+          'UMindMap is a **free, open-source, self-hosted** mind-mapping app — ' +
           'no account, no cloud, no lock-in.',
         children: [
           {
             text: 'Open source — Apache License 2.0',
             note:
-              'UMind is licensed under the **Apache License 2.0**: you are free ' +
+              'UMindMap is licensed under the **Apache License 2.0**: you are free ' +
               'to use, modify and self-host it, with an explicit patent grant. ' +
               'The full text is in the `LICENSE` file in the repository.',
             children: [],
@@ -115,7 +115,7 @@
             text: 'Source code, issues & contributions',
             note:
               'Browse the code, report a bug or contribute at ' +
-              '[github.com/pponec/UMind](https://github.com/pponec/UMind).',
+              '[github.com/pponec/UMindMap](https://github.com/pponec/UMindMap).',
             children: [],
           },
           {

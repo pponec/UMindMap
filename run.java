@@ -1,5 +1,5 @@
 /*
- * Run the UMind app over http (so localStorage auto-save works).
+ * Run the UMindMap app over http (so localStorage auto-save works).
  *
  * A single-file Java 17 program — no build step, no *.class files. Run it with
  * the source-code launcher:
@@ -68,7 +68,7 @@ public class run {
         server.start();
 
         var url = "http://localhost:" + port + "/";
-        System.out.println("UMind: " + url + "  (serving " + root + ")");
+        System.out.println("UMindMap: " + url + "  (serving " + root + ")");
         System.out.println("Press Ctrl+C to stop.");
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {

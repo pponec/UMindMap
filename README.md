@@ -1,18 +1,18 @@
-# UMind <sub><img src="docs/images/umind-logo.png" alt="UMind logo" height="80"></sub>
+# UMindMap <sub><img src="docs/images/umindmap-logo.png" alt="UMindMap logo" height="80"></sub>
 
 **Think in an outline, share as a picture.**
 
-UMind is a minimalist, self-hosted mind-mapping application where you **write the map as a nested list instead of drawing it on a canvas**.
+UMindMap is a minimalist, self-hosted mind-mapping application where you **write the map as a nested list instead of drawing it on a canvas**.
 The outline directly represents the tree structure: every node has a title and an optional Markdown description.
-From this textual representation, UMind automatically generates a balanced graphical mind map while preserving the order of the nodes.
+From this textual representation, UMindMap automatically generates a balanced graphical mind map while preserving the order of the nodes.
 One HTML file, plain JavaScript, no build step, no account, no cloud.
 Your maps live in your browser and in `.json` files you own.
 
-**▶ Try it live:** **https://pponec.github.io/UMind/?welcome**
+**▶ Try it live:** **https://pponec.github.io/UMindMap/?welcome**
 
-[![A map exported by UMind](docs/images/graph-example.png)](docs/images/graph-example.png)
+[![A map exported by UMindMap](docs/images/graph-example.png)](docs/images/graph-example.png)
 
-<sup>The picture above is real UMind output — every node, every description, one SVG file.
+<sup>The picture above is real UMindMap output — every node, every description, one SVG file.
 Click it for full size.</sup>
 
 ## Two modes, one document
@@ -47,7 +47,7 @@ The mouse is welcome too: drag the ⠿ grip to move a branch anywhere, click ▸
 ## Why you might like it
 
 - **Write first, arrange never.**
-  Focus on your ideas in a keyboard-friendly outline while UMind takes care of the visual layout.
+  Focus on your ideas in a keyboard-friendly outline while UMindMap takes care of the visual layout.
 - **Your data stays yours.**
   Everything is auto-saved in your browser; *Save* and *Open* move plain `.json` files to and from your disk.
   Nothing is ever sent to a server — there is no server.
@@ -61,7 +61,7 @@ The mouse is welcome too: drag the ⠿ grip to move a branch anywhere, click ▸
 
 ## Desktop first
 
-UMind is built around a keyboard, and it shows.
+UMindMap is built around a keyboard, and it shows.
 On a phone — Android in particular — the on-screen keyboard opens as soon as you touch a node and covers a good part of the screen, which leaves little room for the map you are editing.
 Reading a map, folding branches and looking at the picture are fine on a small screen; typing into one is cramped.
 Making the phone a comfortable place to *write* a map is not on the roadmap.
@@ -104,7 +104,7 @@ Clearing the browser's site data removes it.
 1. **Save** (or **Save As…**) writes the whole document to a `.json` file.
 2. Send that file, drop it in a shared folder, commit it to a repository — it is plain text.
 3. The other side presses **Open…** and picks it up.
-   For a read-only copy that anyone can look at without UMind, use **Show graph → Download SVG**: one self-contained picture, viewable in any browser.
+   For a read-only copy that anyone can look at without UMindMap, use **Show graph → Download SVG**: one self-contained picture, viewable in any browser.
 
 ## The address bar is part of the app
 
@@ -112,11 +112,11 @@ The query is simply the project's name, optionally with a `/graph` tail — so d
 
 | URL | Opens |
 |---|---|
-| `…/UMind/` | the project you had open last |
-| `…/UMind/?my-map` | the project saved as `my-map` |
-| `…/UMind/?my-map/graph` | its picture |
-| `…/UMind/?demo.json` | a **shared** read-only map file (shown as a picture) — see below |
-| `…/UMind/?welcome` | the guided welcome map |
+| `…/UMindMap/` | the project you had open last |
+| `…/UMindMap/?my-map` | the project saved as `my-map` |
+| `…/UMindMap/?my-map/graph` | its picture |
+| `…/UMindMap/?demo.json` | a **shared** read-only map file (shown as a picture) — see below |
+| `…/UMindMap/?welcome` | the guided welcome map |
 
 > **A link is not a copy.**
 > `?my-map` picks a project out of *your own* browser storage.
@@ -129,7 +129,7 @@ A name *without* it — `?my-map` — opens a **private** project from *your own
 A name *ending* in `.json` — `?demo.json` — instead **fetches a file the site publishes**, a real `.json` served from the app's own `data/` folder:
 
 ```
-https://pponec.github.io/UMind/?demo.json
+https://pponec.github.io/UMindMap/?demo.json
 ```
 
 Such a **shared map** opens as a read-only picture, is never auto-saved, and re-reads the file on every visit — so it is the one kind of link you *can* hand to somebody else and trust that they see the same map.
@@ -144,7 +144,7 @@ How `src` resolves is governed by the browser's security model:
 | `src` value | Result |
 |---|---|
 | `https://example.com/pic.png` | Loads from that server. Works anywhere. |
-| `images/pic.png` (relative) | Resolved against the **page's own location**: served over `http` that is the deployed app (e.g. `https://…github.io/UMind/images/pic.png`), opened via `file://` it is the folder next to `index.html`. Either way the image must sit alongside the app — a relative path never reaches an arbitrary place on the visitor's disk. |
+| `images/pic.png` (relative) | Resolved against the **page's own location**: served over `http` that is the deployed app (e.g. `https://…github.io/UMindMap/images/pic.png`), opened via `file://` it is the folder next to `index.html`. Either way the image must sit alongside the app — a relative path never reaches an arbitrary place on the visitor's disk. |
 | `file:///home/me/pic.png` | **Blocked.** Browsers refuse to load `file://` from a page served over `http`/`https`. |
 | `data:image/png;base64,…` | Embedded inline; works everywhere. Note it is stored in the document JSON / localStorage, so keep such images small. |
 
@@ -163,12 +163,12 @@ The whole app is a handful of static files in **`docs/`** — `index.html`, `app
 
 ## Security
 
-UMind is **only** HTML, CSS and JavaScript running inside the visitor's browser tab.
+UMindMap is **only** HTML, CSS and JavaScript running inside the visitor's browser tab.
 That is not a corner cut — it *is* the security model, and it is worth being explicit about what it does and does not allow, especially when the app is served from a static host such as **GitHub Pages**.
 
 - **JavaScript has no reach into your computer — by design.**
   A web page cannot read your files, list your folders or run programs; the browser sandbox forbids it.
-  UMind keeps maps in `localStorage` (its own private slot in your browser) and touches the disk *only* through a file picker **you** open with **Save** / **Open** — one file you choose, when you choose it.
+  UMindMap keeps maps in `localStorage` (its own private slot in your browser) and touches the disk *only* through a file picker **you** open with **Save** / **Open** — one file you choose, when you choose it.
   Nothing scans your drive, and there is no API that could.
 
 - **A static host runs no code of yours.**
@@ -182,7 +182,7 @@ That is not a corner cut — it *is* the security model, and it is worth being e
 - **Markdown is rendered, not executed.**
   The description renderer builds DOM nodes and sets text through `textContent`, so every character is escaped by construction — there is no `innerHTML` path for markup to slip in.
   The `javascript:`, `vbscript:` and `data:` link schemes are refused (images may use `data:`, links may not), and a `file://` reference is blocked by the browser (see [Images in node descriptions](#images-in-node-descriptions)).
-  Because there is no server logic, the most a hosted UMind can do to a visitor is show them a map — and the reverse holds just as firmly: it can learn nothing about them.
+  Because there is no server logic, the most a hosted UMindMap can do to a visitor is show them a map — and the reverse holds just as firmly: it can learn nothing about them.
 
 ## Try the demo maps
 
@@ -192,13 +192,13 @@ A quick way to see what the picture engine handles:
 
 | Map | Shows |
 |---|---|
-| [`?demo.json`](https://pponec.github.io/UMind/?demo.json) | a short intro to the sharing feature |
-| [`?demo-trip.json`](https://pponec.github.io/UMind/?demo-trip.json) | the map pictured at the top of this page |
-| [`?demo-note-sizes.json`](https://pponec.github.io/UMind/?demo-note-sizes.json) | descriptions from one line to very long |
-| [`?demo-deep-nesting.json`](https://pponec.github.io/UMind/?demo-deep-nesting.json) | five levels of structure |
-| [`?demo-tree-shapes.json`](https://pponec.github.io/UMind/?demo-tree-shapes.json) | branches of wildly different shape |
-| [`?demo-notes-everywhere.json`](https://pponec.github.io/UMind/?demo-notes-everywhere.json) | a description on every single node |
-| [`?demo-markdown-notes.json`](https://pponec.github.io/UMind/?demo-markdown-notes.json) | tables, code, quotes, escaping |
+| [`?demo.json`](https://pponec.github.io/UMindMap/?demo.json) | a short intro to the sharing feature |
+| [`?demo-trip.json`](https://pponec.github.io/UMindMap/?demo-trip.json) | the map pictured at the top of this page |
+| [`?demo-note-sizes.json`](https://pponec.github.io/UMindMap/?demo-note-sizes.json) | descriptions from one line to very long |
+| [`?demo-deep-nesting.json`](https://pponec.github.io/UMindMap/?demo-deep-nesting.json) | five levels of structure |
+| [`?demo-tree-shapes.json`](https://pponec.github.io/UMindMap/?demo-tree-shapes.json) | branches of wildly different shape |
+| [`?demo-notes-everywhere.json`](https://pponec.github.io/UMindMap/?demo-notes-everywhere.json) | a description on every single node |
+| [`?demo-markdown-notes.json`](https://pponec.github.io/UMindMap/?demo-markdown-notes.json) | tables, code, quotes, escaping |
 
 Publish your own the same way — drop a `.json` into `docs/data/` and open it as `?your-file.json`; the [folder README](docs/data/README.md) has the details and the naming rules.
 
@@ -208,13 +208,13 @@ Publish your own the same way — drop a `.json` into `docs/data/` and open it a
 
 ## Similar open-source projects
 
-Other lightweight, actively maintained, browser-based mind-map / outliner projects with an English UI that (like UMind) run fully offline and keep your data in a plain file:
+Other lightweight, actively maintained, browser-based mind-map / outliner projects with an English UI that (like UMindMap) run fully offline and keep your data in a plain file:
 
 - **[Mind Elixir](https://github.com/SSShooter/mind-elixir-core)** — Framework-agnostic JavaScript/TypeScript mind-map core with a clean, fast UI; runs entirely in the browser, imports and exports the whole map as JSON, and also exports PNG/SVG.
-  Where UMind is a ready-to-use app, this is a building block for developers: you embed it in your own project and drag nodes around a canvas instead of typing an outline.
+  Where UMindMap is a ready-to-use app, this is a building block for developers: you embed it in your own project and drag nodes around a canvas instead of typing an outline.
   MIT.
 - **[Markmap](https://github.com/markmap/markmap)** — Turns plain Markdown into an interactive mind map (via D3.js) and can generate self-contained offline HTML files, so a single `.md` file stays the source of truth.
-  It draws a map from Markdown you write in your own editor, so it shines at displaying a document — whereas UMind is the place you actually build and grow the map.
+  It draws a map from Markdown you write in your own editor, so it shines at displaying a document — whereas UMindMap is the place you actually build and grow the map.
   MIT.
 - **[jsMind](https://github.com/hizzgdev/jsmind)** — Small, dependency-free JavaScript mind-map library that renders and edits in the browser (SVG/canvas) and loads/saves the map as JSON.
   Like Mind Elixir, it is a library that draws a diagram rather than a finished, keyboard-driven app you can simply open and start writing in.
@@ -222,6 +222,6 @@ Other lightweight, actively maintained, browser-based mind-map / outliner projec
 
 ## Read more
 
-UMind is introduced on `dev.to`, walked through with one example — planning a weekend trip:
+UMindMap is introduced on `dev.to`, walked through with one example — planning a weekend trip:
 
-**[UMind: Write Mind Maps as a Nested Outline](https://dev.to/pponec/umind-write-mind-maps-as-a-list-39j1)**
+**[UMindMap: Write Mind Maps as a Nested Outline](https://dev.to/pponec/umind-write-mind-maps-as-a-list-39j1)**

@@ -1,6 +1,6 @@
-// UMind (https://pponec.github.io/UMind/) — Apache License 2.0
+// UMindMap (https://pponec.github.io/UMindMap/) — Apache License 2.0
 /*
- * UMind — SVG export (Phase 2 add-on, self-contained).
+ * UMindMap — SVG export (Phase 2 add-on, self-contained).
  *
  * Turns the document into a two-sided mind-map drawing and opens it in a new
  * browser tab. Layout rules (see the design notes):
@@ -84,7 +84,7 @@
   const FOOT_GAP = 18;       // space between the drawing and the footer rule
   const LOGO_PX = 20;        // drawn logo size
   const LOGO_RASTER = 36;    // pixels it is rasterised at, for zoom and print
-  const LOGO_SRC = 'images/umind-logo.png';
+  const LOGO_SRC = 'images/umindmap-logo.png';
 
   // Light palette — deliberately independent of the app theme.
   const C = {
@@ -691,7 +691,7 @@
 
   /* ---- Sheet footer: logo, wordmark, project, date ---- */
 
-  // The logo is rasterised from the app's own file, so images/umind-logo.png
+  // The logo is rasterised from the app's own file, so images/umindmap-logo.png
   // stays the single source of truth. Loading starts here and is long finished
   // by the time anyone clicks; if it is not (or the canvas is tainted, as under
   // file://), the footer simply carries no picture. The 1 MB original is never
@@ -710,13 +710,13 @@
           // Tainted canvas — the usual cause is running from file://. The
           // footer stays text-only; say why, or it looks like a bug.
           logoUri = null;
-          console.warn('UMind: the picture is signed without the logo '
+          console.warn('UMindMap: the picture is signed without the logo '
             + '(the canvas is tainted — serve the app over http):', e);
         }
         resolve();
       };
       img.onerror = () => {
-        console.warn('UMind: logo not found at ' + LOGO_SRC
+        console.warn('UMindMap: logo not found at ' + LOGO_SRC
           + ' — the picture is signed without it.');
         resolve();
       };
@@ -749,18 +749,18 @@
   /** How wide the footer is, so a small map is not narrower than its own credit. */
   function footerWidth(project) {
     const logo = logoUri ? LOGO_PX + 10 : 0;
-    return 2 * PAD + logo + textWidth('UMind', BRAND_FONT) + 10
+    return 2 * PAD + logo + textWidth('UMindMap', BRAND_FONT) + 10
       + textWidth(footerMeta(project), META_FONT);
   }
 
   /**
-   * The footer, aligned to the bottom-right corner: logo, "UMind", the
+   * The footer, aligned to the bottom-right corner: logo, "UMindMap", the
    * project's localStorage name and the export date, over a hairline.
    */
   function footerSvg(project, width, height) {
     const meta = footerMeta(project);
     const metaW = textWidth(meta, META_FONT);
-    const brandW = textWidth('UMind', BRAND_FONT);
+    const brandW = textWidth('UMindMap', BRAND_FONT);
     const logoW = logoUri ? LOGO_PX + 10 : 0;
     const right = width - PAD;
     const top = height - PAD - FOOT_H;             // top of the footer band
@@ -770,7 +770,7 @@
       `<path d="M${PAD},${r(top - FOOT_GAP / 2)} H${r(right)}" stroke="${C.headRule}" ` +
       `stroke-width="1"/>`,
       `<text x="${r(brandX)}" y="${r(mid)}" dominant-baseline="central" ` +
-      `fill="${C.rootFill}" ${fontAttrs(BRAND_FONT)}>UMind</text>`,
+      `fill="${C.rootFill}" ${fontAttrs(BRAND_FONT)}>UMindMap</text>`,
       `<text x="${r(right)}" y="${r(mid)}" text-anchor="end" dominant-baseline="central" ` +
       `fill="${C.meta}" ${fontAttrs(META_FONT)}>${esc(meta)}</text>`,
     ];
@@ -815,7 +815,7 @@
     parts.push(
       `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" ` +
       `width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">`);
-    parts.push(`<title>${esc((doc.root.text || 'UMind map').trim())}</title>`);
+    parts.push(`<title>${esc((doc.root.text || 'UMindMap').trim())}</title>`);
     // The file is parsed as XML, where a "<" inside <style> would start a tag,
     // so the CSS is wrapped in CDATA. The markers sit inside CSS comments as
     // well, so that inlining this SVG into an HTML page — where <style> is raw
