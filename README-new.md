@@ -1,7 +1,8 @@
 # UMind <sub><img src="docs/images/umind-logo.png" alt="UMind logo" height="80"></sub>
 
 **Think in an outline, share as a picture.**
-Write first, arrange never.
+
+**Write first, arrange never.**
 
 UMind is a minimalist, self-hosted mind-mapping application where you **write the map as a nested outline instead of drawing it on a canvas**.
 The outline directly represents the tree structure: every node has a title and an optional Markdown description.
@@ -48,7 +49,7 @@ The mouse is welcome too: drag the ⠿ grip to move a branch anywhere, click
 
 ## Why you might like it
 
-- **Write first, arrange never.**
+- **Write first, arrange never.** 
   Focus on your ideas in a keyboard-friendly outline while UMind takes care of the visual layout.
 - **Your data stays yours.** Everything is auto-saved in your browser; *Save*   and *Open* move plain `.json` files to and from your disk.
   Nothing is ever  sent to a server — there is no server. (Which also means sharing is a
@@ -107,8 +108,8 @@ Clearing the browser's site data removes it.
 1. **Save** (or **Save As…**) writes the whole document to a `.json` file.
 2. Send that file, drop it in a shared folder, commit it to a repository — it is plain text.
 3. The other side presses **Open…** and picks it up.
-   For a read-only copy that anyone can look at without UMind, use **Show graph →
-   Download SVG**: one self-contained picture, viewable in any browser.
+For a read-only copy that anyone can look at without UMind, use **Show graph →
+Download SVG**: one self-contained picture, viewable in any browser.
 
 ## The address bar is part of the app
 
@@ -166,6 +167,19 @@ Works anywhere. |
 | `data:image/png;base64,…` | Embedded inline; works everywhere.
 Note it is stored in the document JSON / localStorage, so keep such images small. |
 
+**You cannot reference an image from the local filesystem** (`file://`) from a
+hosted page — that includes GitHub Pages.
+To use a local image, drop the file
+in `docs/images/logo.png`, start a launcher above, and write in a description:
+
+```markdown
+![UMind logo](images/logo.png)
+```
+
+The browser then requests `http://localhost:8000/images/logo.png`, and the same
+relative reference keeps working after deployment, provided the file is
+committed and published with the app.
+
 ## Under the hood
 
 The whole app is a handful of static files in **`docs/`** — `index.html`,
@@ -193,13 +207,13 @@ That is not a corner cut — it *is* the security model, and it is worth
 being explicit about what it does and does not allow, especially when the app is
 served from a static host such as **GitHub Pages**.
 
-- **JavaScript has no reach into your computer — by design.**
+- **JavaScript has no reach into your computer — by design.** 
   A web page cannot  read your files, list your folders or run programs; the browser sandbox forbids it.
   UMind keeps maps in `localStorage` (its own private slot in your browser) and touches the disk *only* through a file picker **you** open with
   **Save** / **Open** — one file you choose, when you choose it.
   Nothing scans  your drive, and there is no API that could.
 
-- **A static host runs no code of yours.**
+- **A static host runs no code of yours.** 
   On GitHub Pages — or any static server — there is no backend, no database, no session and no credentials: the
   server only hands out files.
   It cannot receive, log or store anything you type, because nothing you type is ever sent to it.
@@ -266,7 +280,7 @@ data in a plain file:
 
 ## Read more
 
-UMind is introduced on `dev.to`, walked through with one example — planning a
+UMind is introduced on dev.to, walked through with one example — planning a
 weekend trip:
 
 **[UMind: Write Mind Maps as a Nested Outline](https://dev.to/pponec/umind-write-mind-maps-as-a-list-39j1)**
