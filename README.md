@@ -211,10 +211,13 @@ Publish your own the same way — drop a `.json` into `docs/data/` and open it a
 Other lightweight, actively maintained, browser-based mind-map / outliner projects with an English UI that (like UMind) run fully offline and keep your data in a plain file:
 
 - **[Mind Elixir](https://github.com/SSShooter/mind-elixir-core)** — Framework-agnostic JavaScript/TypeScript mind-map core with a clean, fast UI; runs entirely in the browser, imports and exports the whole map as JSON, and also exports PNG/SVG.
+  Where UMind is a ready-to-use app, this is a building block for developers: you embed it in your own project and drag nodes around a canvas instead of typing an outline.
   MIT.
 - **[Markmap](https://github.com/markmap/markmap)** — Turns plain Markdown into an interactive mind map (via D3.js) and can generate self-contained offline HTML files, so a single `.md` file stays the source of truth.
+  It draws a map from Markdown you write in your own editor, so it shines at displaying a document — whereas UMind is the place you actually build and grow the map.
   MIT.
 - **[jsMind](https://github.com/hizzgdev/jsmind)** — Small, dependency-free JavaScript mind-map library that renders and edits in the browser (SVG/canvas) and loads/saves the map as JSON.
+  Like Mind Elixir, it is a library that draws a diagram rather than a finished, keyboard-driven app you can simply open and start writing in.
   BSD.
 
 ## Read more
