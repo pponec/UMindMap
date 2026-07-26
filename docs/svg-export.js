@@ -21,9 +21,10 @@
  *        - parent -> hanging straight below its own node, inside the parent's
  *                    column (never the child column), so the leader is a short
  *                    vertical drop and only the overhang below the subtree
- *                    costs any height; a bubble much wider than its node would
- *                    reach into the connector fan, so that case falls back to a
- *                    lane below the whole subtree (hangCrosses);
+ *                    costs any height; a bubble wider than its node can reach
+ *                    into the connector fan, so that case drops the bubble
+ *                    just low enough to duck under the crossing connector,
+ *                    no lower (hangClearance);
  *        - root   -> the free strip below the root box (branch columns start
  *                    far to the left and right of it).
  *
@@ -69,7 +70,6 @@
                              // slightly from ours: foreignObject clips, and a
                              // bubble one line too short would lose that line
   const LEAD = 30;           // leader-line length from node to bubble
-  const LANE_GAP = 16;       // clearance below a parent's hanging bubble
   const NOTE_GAP = 10;       // clearance a bubble keeps from anything else
   const FAN_SLICES = 6;      // pieces a connector is reserved in (see fanRects)
   const DOGEAR = 14;         // folded-corner size (always the top-right corner)
@@ -325,33 +325,39 @@
   }
 
   /**
-   * Would a connector to a lower child run behind a bubble hanging under this
-   * node? Only a bubble wider than its node reaches into the fan at all; the
-   * cubic of linkPath is then sampled in coordinates relative to the node's
-   * outer edge, using the narrowest column gap the drawing can still end up
-   * with — the worst case, because a short link descends soonest.
+   * How far down a bubble hanging under this node must start to duck under
+   * every connector that would otherwise run behind it. Only a bubble wider
+   * than its node reaches into the fan at all; the cubic of linkPath is then
+   * sampled in coordinates relative to the node's outer edge, using the
+   * narrowest column gap the drawing can still end up with — the worst case,
+   * because a short link descends soonest. A connector only threatens the
+   * bubble while its horizontal offset from the node is still inside the
+   * bubble's width (`out`); the cubic's x is monotonic, so once a connector
+   * has swung past that width it can never re-enter it, and the highest point
+   * (largest y) it reaches before that moment is exactly the clearance the
+   * bubble needs — no more. Returns null when nothing needs to be dodged.
    */
-  function hangCrosses(node, depth, noteH, widths) {
+  function hangClearance(node, depth, widths) {
     const out = NOTE_W - node._w;   // how far the bubble sticks past the node
-    if (out <= 0) return false;
+    if (out <= 0) return null;
     // Same gap `columns()` will use, from the widths known so far; later
     // siblings can only widen it, which makes the link even flatter here.
     const gap = Math.max(COL_MIN[Math.min(depth, COL_MIN.length - 1)],
       (widths[depth] || 0) + LINK_MIN);
     const span = Math.max(gap - node._w, LINK_MIN);
-    const top = node._y + BOX_H / 2 + LEAD;
-    const bottom = top + noteH;
-    return node.children.some((child) => {
-      if (child._y <= node._y) return false;      // links going up stay clear
-      for (let i = 1; i < 40; i++) {
+    let clearance = null;
+    node.children.forEach((child) => {
+      if (child._y <= node._y) return;      // links going up stay clear
+      let lastY = node._y;
+      for (let i = 1; i <= 40; i++) {
         const t = i / 40;
         const x = span * (1.5 * t * (1 - t) + t * t * t);
-        if (x >= out) return false;                // past the bubble, still above
-        const y = node._y + (child._y - node._y) * (3 * t * t - 2 * t * t * t);
-        if (y > top && y < bottom) return true;
+        if (x >= out) break;                // past the bubble from here on
+        lastY = node._y + (child._y - node._y) * (3 * t * t - 2 * t * t * t);
       }
-      return false;
+      clearance = clearance == null ? lastY : Math.max(clearance, lastY);
     });
+    return clearance;
   }
 
   /** First pass: label, width, depth and side for every node, plus the widest
@@ -373,7 +379,7 @@
    * monotone in both axes, so a slice is exactly the curve's own extent there,
    * and the staircase hugs the curve instead of claiming the whole rectangle
    * between the two columns. The node's own bubble belongs to the same group
-   * and is never tested against these (that case is hangCrosses' job).
+   * and is never tested against these (that case is hangClearance's job).
    */
   function fanRects(node) {
     const x1 = node._side > 0 ? node._x + node._w : node._x;
@@ -471,11 +477,18 @@
       } else {
         kids.forEach(place);
         node._y = (kids[0]._y + kids[kids.length - 1]._y) / 2;
-        if (node.note && hangCrosses(node, node._depth, node.note.h, widths)) {
-          // Too wide for its node: fall back to a lane below the whole subtree,
-          // where no connector can reach it.
-          const bottom = subtreeRects(node).reduce((m, r) => Math.max(m, r.y + r.h), 0);
-          node._lane = bottom + LANE_GAP + node.note.h / 2;
+        if (node.note) {
+          const clearance = hangClearance(node, node._depth, widths);
+          if (clearance != null) {
+            // A connector would run behind the default position: drop the
+            // bubble just low enough to duck under it, instead of pushing it
+            // beneath the whole subtree (which includes descendants' own
+            // note bubbles, sitting in an entirely different column and thus
+            // never a real threat to this one).
+            const defaultTop = node._y + BOX_H / 2 + LEAD;
+            const top = Math.max(defaultTop, clearance + NOTE_GAP);
+            node._lane = top + node.note.h / 2;
+          }
         }
         attachRects(node);
         state.cursor += slideDown(node, placed);
