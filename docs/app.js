@@ -20,7 +20,7 @@
 // repository, which carries the app's documentation and a link to run it live,
 // and which the toolbar wordmark links to.
 const APP_NAME = 'UMindMap';
-const APP_VERSION = '1.0.0';
+const APP_VERSION = '1.0.1';
 const APP_HOME = 'https://github.com/pponec/UMindMap';
 
 /* ---------------------------------------------------------------------- */
@@ -32,23 +32,16 @@ function genId() {
   return 'n_' + Math.random().toString(36).slice(2, 8);
 }
 
-/** Generate a stable, hidden project id, e.g. "m_3f9k1z". */
-function genMapId() {
-  return 'm_' + Math.random().toString(36).slice(2, 10);
-}
-
 /** Create a fresh node with the given text (empty by default). */
 function makeNode(text) {
   return { id: genId(), text: text || '', note: '', collapsed: false, children: [] };
 }
 
-/** Wrap a freshly-built tree as a document: pin the root id and attach a
- *  project id. `id` is a stable, hidden project id (unused in Phase 0 — the
- *  file is the identity — but carried in the JSON so Phase 1 can address the
- *  map as /api/map/{id}). */
+/** Wrap a freshly-built tree as a document: keep the root's (already
+ *  generated, by makeNode) id at hand as `rootId`, which is session-local
+ *  only and never written to the file — see serialise(). */
 function wrapDocument(root) {
-  root.id = 'n_root';
-  return { version: 1, id: genMapId(), rootId: root.id, root: root };
+  return { rootId: root.id, root: root };
 }
 
 /** Build the initial empty document. The root text doubles as the human
@@ -57,13 +50,30 @@ function newDocument() {
   return wrapDocument(makeNode('Untitled'));
 }
 
-/** Ensure a loaded document has a project id (older files may lack one) and
- *  drop the file header — it describes the export, not the map, and is written
- *  fresh on every save. Both the current `meta` key and the legacy `generator`
- *  are removed, so files written before the rename still load cleanly. */
-function ensureDocId(d) {
-  if (d && !d.id) d.id = genMapId();
-  if (d) { delete d.meta; delete d.generator; }
+/** Assign a fresh, session-local id to every node in the tree (recursively),
+ *  the same way makeNode() does for a brand-new node. Node ids are never part
+ *  of the saved JSON (see serialise) — they only bind DOM elements to data
+ *  during the current editing session — so a loaded file's own ids (if an
+ *  older, v1 file even has any) are never trusted, just overwritten. */
+function assignNodeIds(node) {
+  node.id = genId();
+  node.children.forEach(assignNodeIds);
+  return node;
+}
+
+/** Normalize a just-loaded document: drop the file header (`meta`) — it
+ *  describes the export, not the map, and is written fresh on every save —
+ *  drop the old project `id` if the file still carries one, and hand every
+ *  node a fresh id, recomputing `rootId` from it. There is no schema version
+ *  to check: past format changes have all been detectable from the shape of
+ *  the data itself (a field present or missing), and the same approach is
+ *  meant to cover future ones too. */
+function normalizeLoadedDoc(d) {
+  if (d) { delete d.meta; delete d.id; }
+  if (d && d.root) {
+    assignNodeIds(d.root);
+    d.rootId = d.root.id;
+  }
   return d;
 }
 
@@ -862,10 +872,12 @@ function fileMeta() {
   return m;
 }
 
-/** Serialise the document, trimming node text (§5: trim on serialisation). */
+/** Serialise the document, trimming node text (§5: trim on serialisation).
+ *  Node ids and `rootId` are session-local (see assignNodeIds) and are never
+ *  written to the file — the file has no schema version either, see
+ *  normalizeLoadedDoc(). */
 function serialise() {
   const trimTree = (node) => ({
-    id: node.id,
     text: node.text.trim(),
     note: (node.note || '').trim(),
     collapsed: node.collapsed,
@@ -874,9 +886,6 @@ function serialise() {
   return JSON.stringify(
     {
       meta: fileMeta(),
-      version: doc.version,
-      id: doc.id,
-      rootId: doc.rootId,
       root: trimTree(doc.root),
     },
     null,
@@ -888,9 +897,9 @@ function serialise() {
 function loadDocFromText(text, source) {
   try {
     const parsed = JSON.parse(text);
-    if (!parsed.root || !parsed.rootId) throw new Error('missing root');
+    if (!parsed.root) throw new Error('missing root');
     endTextBurst();
-    doc = ensureDocId(parsed);
+    doc = normalizeLoadedDoc(parsed);
     undoStack.length = 0; // history belongs to the previous document
     redoStack.length = 0;
     currentId = doc.rootId;
@@ -977,7 +986,7 @@ function readStoredDoc(key) {
     const raw = localStorage.getItem(key);
     if (!raw) return null;
     const parsed = JSON.parse(raw);
-    if (parsed && parsed.root && parsed.rootId) return parsed;
+    if (parsed && parsed.root) return parsed;
   } catch (e) {
     console.warn('localStorage load failed:', e);
   }
@@ -1597,8 +1606,8 @@ async function bootSharedFile(fileName) {
       { cache: 'no-store' });
     if (!res.ok) throw new Error('HTTP ' + res.status);
     const parsed = JSON.parse(await res.text());
-    if (!parsed.root || !parsed.rootId) throw new Error('not a UMindMap document');
-    doc = ensureDocId(parsed);
+    if (!parsed.root) throw new Error('not a UMindMap document');
+    doc = normalizeLoadedDoc(parsed);
     doc.isShared = true;                  // read-only preview, never persisted
     currentFileName = baseName(fileName); // the name a fork would take on Edit
     currentId = doc.rootId;
@@ -1633,7 +1642,7 @@ function bootLocal() {
   if (!forceWelcome && urlTarget.name && storageOk) {
     const wanted = readStoredDoc(PROJECT_PREFIX + urlTarget.name);
     if (wanted) {
-      doc = ensureDocId(wanted);
+      doc = normalizeLoadedDoc(wanted);
       currentFileName = urlTarget.name === 'untitled' ? null : urlTarget.name;
       currentId = doc.rootId;
     } else {
@@ -1651,7 +1660,7 @@ function bootLocal() {
     const lastName = localStorage.getItem(LAST_KEY); // null = never saved here
     const restored = readStoredDoc(PROJECT_PREFIX + (lastName || 'untitled'));
     if (restored) {
-      doc = ensureDocId(restored);
+      doc = normalizeLoadedDoc(restored);
       currentFileName = lastName || null;
       currentId = doc.rootId;
     } else if (lastName === null) {

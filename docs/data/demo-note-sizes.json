@@ -1,42 +1,34 @@
 {
   "meta": {
     "app": "UMindMap",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "home": "https://github.com/pponec/UMindMap",
     "project": "demo-note-sizes",
-    "exported": "2026-07-23 16:39"
+    "exported": "2026-07-27 13:29"
   },
-  "version": 1,
-  "id": "m_test01",
-  "rootId": "n_root",
   "root": {
-    "id": "n_root",
     "text": "Note sizes",
     "note": "The **same tree** five times over, with notes from nothing to very tall. Nothing may overlap and the sheet must not grow with the note height.",
     "collapsed": false,
     "children": [
       {
-        "id": "n_002",
         "text": "No notes at all",
         "note": "",
         "collapsed": false,
         "children": [
           {
-            "id": "n_003",
             "text": "Plain leaf",
             "note": "",
             "collapsed": false,
             "children": []
           },
           {
-            "id": "n_004",
             "text": "Another plain leaf",
             "note": "",
             "collapsed": false,
             "children": []
           },
           {
-            "id": "n_005",
             "text": "A third one",
             "note": "",
             "collapsed": false,
@@ -45,27 +37,23 @@
         ]
       },
       {
-        "id": "n_006",
         "text": "One-line notes",
         "note": "Short notes stay next to their node.",
         "collapsed": false,
         "children": [
           {
-            "id": "n_007",
             "text": "First step",
             "note": "Press Enter to add a sibling.",
             "collapsed": false,
             "children": []
           },
           {
-            "id": "n_008",
             "text": "Second step",
             "note": "Press Tab to indent it.",
             "collapsed": false,
             "children": []
           },
           {
-            "id": "n_009",
             "text": "Third step",
             "note": "Press Alt+Enter to describe it.",
             "collapsed": false,
@@ -74,27 +62,23 @@
         ]
       },
       {
-        "id": "n_010",
         "text": "A paragraph note",
         "note": "A medium note: two or three sentences of context that would clutter the node label itself. It wraps to a handful of lines and is still easy to read next to its node.",
         "collapsed": false,
         "children": [
           {
-            "id": "n_011",
             "text": "Leaf without a note",
             "note": "",
             "collapsed": false,
             "children": []
           },
           {
-            "id": "n_012",
             "text": "Leaf with a paragraph",
             "note": "A medium note: two or three sentences of context that would clutter the node label itself. It wraps to a handful of lines and is still easy to read next to its node.",
             "collapsed": false,
             "children": []
           },
           {
-            "id": "n_013",
             "text": "Leaf without a note, again",
             "note": "",
             "collapsed": false,
@@ -103,34 +87,29 @@
         ]
       },
       {
-        "id": "n_014",
         "text": "A very tall note",
         "note": "The branch note is short here; the tall one hangs on the middle leaf.",
         "collapsed": false,
         "children": [
           {
-            "id": "n_015",
             "text": "Short and quiet",
             "note": "",
             "collapsed": false,
             "children": []
           },
           {
-            "id": "n_016",
             "text": "Carries the tall note",
             "note": "A note can be much taller than the node it belongs to:\n\n- keyboard editing\n- drag and drop\n- collapse and expand\n- Markdown descriptions\n- auto-save to the browser\n- JSON export and import\n- SVG picture of the whole map\n- no build step, no dependencies\n\nThe picture must stay compact anyway: this bubble sits in the gutter, so it may not push the branches below it downwards.",
             "collapsed": false,
             "children": []
           },
           {
-            "id": "n_017",
             "text": "Should stay right below its sibling",
             "note": "",
             "collapsed": false,
             "children": []
           },
           {
-            "id": "n_018",
             "text": "Taller than any sensible limit",
             "note": "A note with no upper bound on its height. Everything below has to be drawn — a picture that quietly drops the end of a description is worse than a tall picture.\n\n**Step 1.** Focus a node and press Alt+Enter to open its description.\n\n**Step 2.** Write as much as the node deserves; Markdown is welcome.\n\n**Step 3.** Press Ctrl+Enter to keep it, or Esc to throw it away.\n\n**Step 4.** The 🗒 marker appears after the node text.\n\n**Step 5.** Show graph draws the description next to its node.\n\n**Step 6.** The bubble is exactly as tall as the text needs.\n\n**Step 7.** Branches below it do not move — the bubble is in the gutter.\n\n**Step 8.** Save As writes the whole document to a .json file.",
             "collapsed": false,
@@ -139,20 +118,17 @@
         ]
       },
       {
-        "id": "n_019",
         "text": "Tall note on the branch itself",
         "note": "A note can be much taller than the node it belongs to:\n\n- keyboard editing\n- drag and drop\n- collapse and expand\n- Markdown descriptions\n- auto-save to the browser\n- JSON export and import\n- SVG picture of the whole map\n- no build step, no dependencies\n\nThe picture must stay compact anyway: this bubble sits in the gutter, so it may not push the branches below it downwards.",
         "collapsed": false,
         "children": [
           {
-            "id": "n_020",
             "text": "Child one",
             "note": "",
             "collapsed": false,
             "children": []
           },
           {
-            "id": "n_021",
             "text": "Child two",
             "note": "",
             "collapsed": false,

@@ -1,35 +1,28 @@
 {
   "meta": {
     "app": "UMindMap",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "home": "https://github.com/pponec/UMindMap",
     "project": "demo-trip",
-    "exported": "2026-07-23 16:39"
+    "exported": "2026-07-27 13:29"
   },
-  "version": 1,
-  "id": "m_test06",
-  "rootId": "n_root",
   "root": {
-    "id": "n_root",
     "text": "Weekend trip 🎒",
     "note": "A weekend away for **two**, first weekend of May.\n\nEvery branch below is one node with a description — the kind of half-plan that otherwise ends up scattered across five different notes.",
     "collapsed": false,
     "children": [
       {
-        "id": "n_002",
         "text": "Getting there 🚆",
         "note": "| Option | Time | Price |\n|---|---|---|\n| Train | 4 h | 29 |\n| Night bus | 6 h | 19 |\n| Flight | 1 h | 60+ |\n\nThe train wins: city centre to city centre, no airport transfer.",
         "collapsed": false,
         "children": [
           {
-            "id": "n_003",
             "text": "Book the train early",
             "note": "Tickets open **90 days** ahead and the cheap fare sells out first.\n\n![Train ticket — Central to Old town, one way, €29](data/train-ticket.png)",
             "collapsed": false,
             "children": []
           },
           {
-            "id": "n_004",
             "text": "Tram from the station",
             "note": "",
             "collapsed": false,
@@ -38,20 +31,17 @@
         ]
       },
       {
-        "id": "n_005",
         "text": "Where to stay 🛏",
         "note": "Anywhere inside the tram ring works — the place is small enough to walk.",
         "collapsed": false,
         "children": [
           {
-            "id": "n_006",
             "text": "Old town",
             "note": "Everything within reach, but noisy on Saturday night.",
             "collapsed": false,
             "children": []
           },
           {
-            "id": "n_007",
             "text": "By the river",
             "note": "Quieter, full of cafés, ten minutes by tram.",
             "collapsed": false,
@@ -60,27 +50,23 @@
         ]
       },
       {
-        "id": "n_008",
         "text": "What to see 🏰",
         "note": "",
         "collapsed": false,
         "children": [
           {
-            "id": "n_009",
             "text": "The old bridge at sunrise",
             "note": "> Go before 7 a.m. — by nine it is shoulder to shoulder.\n\nThe light from the _east_ end is the good one.",
             "collapsed": false,
             "children": []
           },
           {
-            "id": "n_010",
             "text": "The castle",
             "note": "",
             "collapsed": false,
             "children": []
           },
           {
-            "id": "n_011",
             "text": "Hilltop lookout",
             "note": "",
             "collapsed": false,
@@ -89,20 +75,17 @@
         ]
       },
       {
-        "id": "n_012",
         "text": "Food & drink 🍽",
         "note": "Two rules: eat where the menu is not translated into five languages, and always ask before they pour the water.",
         "collapsed": false,
         "children": [
           {
-            "id": "n_013",
             "text": "The one local dish",
             "note": "",
             "collapsed": false,
             "children": []
           },
           {
-            "id": "n_014",
             "text": "Beer garden by the river",
             "note": "Best view in town, plastic cups, cash only.",
             "collapsed": false,
@@ -111,20 +94,17 @@
         ]
       },
       {
-        "id": "n_015",
         "text": "Before you go ✅",
         "note": "1. Book the train\n2. Download an offline map\n3. Get some cash — many places take **no cards**\n4. Check the forecast (below)",
         "collapsed": false,
         "children": [
           {
-            "id": "n_016",
             "text": "What to pack",
             "note": "| Day | Evening |\n|---|---|\n| Walking shoes | One warm layer |\n| Water bottle | Something smarter |\n| Sunglasses | Umbrella |",
             "collapsed": false,
             "children": []
           },
           {
-            "id": "n_017",
             "text": "Weather in May",
             "note": "Around **18 °C**, and it _will_ rain at least once. Map and forecast: [OpenStreetMap](https://www.openstreetmap.org/).",
             "collapsed": false,

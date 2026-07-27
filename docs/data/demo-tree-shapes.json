@@ -1,105 +1,88 @@
 {
   "meta": {
     "app": "UMindMap",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "home": "https://github.com/pponec/UMindMap",
     "project": "demo-tree-shapes",
-    "exported": "2026-07-23 16:39"
+    "exported": "2026-07-27 13:29"
   },
-  "version": 1,
-  "id": "m_test03",
-  "rootId": "n_root",
   "root": {
-    "id": "n_root",
     "text": "Tree shapes",
     "note": "Branches of deliberately different shape, to see whether a short branch can rise into the space beside a tall neighbour.",
     "collapsed": false,
     "children": [
       {
-        "id": "n_002",
         "text": "A wide fan of twelve leaves",
         "note": "The tallest branch of the map. Everything else has to pack around it.",
         "collapsed": false,
         "children": [
           {
-            "id": "n_003",
             "text": "Leaf 01",
             "note": "",
             "collapsed": false,
             "children": []
           },
           {
-            "id": "n_004",
             "text": "Leaf 02",
             "note": "",
             "collapsed": false,
             "children": []
           },
           {
-            "id": "n_005",
             "text": "Leaf 03",
             "note": "",
             "collapsed": false,
             "children": []
           },
           {
-            "id": "n_006",
             "text": "Leaf 04",
             "note": "",
             "collapsed": false,
             "children": []
           },
           {
-            "id": "n_007",
             "text": "Leaf 05",
             "note": "",
             "collapsed": false,
             "children": []
           },
           {
-            "id": "n_008",
             "text": "Leaf 06",
             "note": "",
             "collapsed": false,
             "children": []
           },
           {
-            "id": "n_009",
             "text": "Leaf 07",
             "note": "",
             "collapsed": false,
             "children": []
           },
           {
-            "id": "n_010",
             "text": "Leaf 08",
             "note": "",
             "collapsed": false,
             "children": []
           },
           {
-            "id": "n_011",
             "text": "Leaf 09",
             "note": "",
             "collapsed": false,
             "children": []
           },
           {
-            "id": "n_012",
             "text": "Leaf 10",
             "note": "",
             "collapsed": false,
             "children": []
           },
           {
-            "id": "n_013",
             "text": "Leaf 11",
             "note": "",
             "collapsed": false,
             "children": []
           },
           {
-            "id": "n_014",
             "text": "Leaf 12",
             "note": "",
             "collapsed": false,
@@ -108,25 +91,21 @@
         ]
       },
       {
-        "id": "n_015",
         "text": "A single-child chain",
         "note": "One child per level — narrow but deep.",
         "collapsed": false,
         "children": [
           {
-            "id": "n_016",
             "text": "Only child",
             "note": "",
             "collapsed": false,
             "children": [
               {
-                "id": "n_017",
                 "text": "Only grandchild",
                 "note": "",
                 "collapsed": false,
                 "children": [
                   {
-                    "id": "n_018",
                     "text": "Only great-grandchild",
                     "note": "",
                     "collapsed": false,
@@ -139,47 +118,40 @@
         ]
       },
       {
-        "id": "n_019",
         "text": "One child with many children of its own",
         "note": "",
         "collapsed": false,
         "children": [
           {
-            "id": "n_020",
             "text": "The only child",
             "note": "Its own children make this branch tall.",
             "collapsed": false,
             "children": [
               {
-                "id": "n_021",
                 "text": "Grandchild A",
                 "note": "",
                 "collapsed": false,
                 "children": []
               },
               {
-                "id": "n_022",
                 "text": "Grandchild B",
                 "note": "",
                 "collapsed": false,
                 "children": []
               },
               {
-                "id": "n_023",
                 "text": "Grandchild C",
                 "note": "",
                 "collapsed": false,
                 "children": []
               },
               {
-                "id": "n_024",
                 "text": "Grandchild D",
                 "note": "",
                 "collapsed": false,
                 "children": []
               },
               {
-                "id": "n_025",
                 "text": "Grandchild E",
                 "note": "",
                 "collapsed": false,
@@ -190,20 +162,17 @@
         ]
       },
       {
-        "id": "n_026",
         "text": "A collapsed branch — the picture ignores it",
         "note": "This node is stored as `collapsed`, which is view state. The outliner folds it; the exported picture always draws every node.",
         "collapsed": true,
         "children": [
           {
-            "id": "n_027",
             "text": "Hidden in the outliner, drawn in the picture",
             "note": "",
             "collapsed": false,
             "children": []
           },
           {
-            "id": "n_028",
             "text": "Same here",
             "note": "",
             "collapsed": false,
@@ -212,20 +181,17 @@
         ]
       },
       {
-        "id": "n_029",
         "text": "A label so long that it has to be cut short somewhere before the right-hand edge of the sheet is reached, which is what the ellipsis is for",
         "note": "Labels stay on one line and are truncated with an ellipsis past the maximum box width.",
         "collapsed": false,
         "children": [
           {
-            "id": "n_030",
             "text": "Ok",
             "note": "",
             "collapsed": false,
             "children": []
           },
           {
-            "id": "n_031",
             "text": "A short label next to a very long one",
             "note": "",
             "collapsed": false,
@@ -234,20 +200,17 @@
         ]
       },
       {
-        "id": "n_032",
         "text": "Two leaves, no notes",
         "note": "",
         "collapsed": false,
         "children": [
           {
-            "id": "n_033",
             "text": "First",
             "note": "",
             "collapsed": false,
             "children": []
           },
           {
-            "id": "n_034",
             "text": "Second",
             "note": "",
             "collapsed": false,
@@ -256,7 +219,6 @@
         ]
       },
       {
-        "id": "n_035",
         "text": "A lonely branch with no children at all",
         "note": "A branch may be a leaf itself; its note then sits in the outer gutter.",
         "collapsed": false,

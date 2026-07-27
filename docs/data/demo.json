@@ -1,42 +1,34 @@
 {
   "meta": {
     "app": "UMindMap",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "home": "https://github.com/pponec/UMindMap",
     "project": "demo",
-    "exported": "2026-07-23 20:00"
+    "exported": "2026-07-27 13:28"
   },
-  "version": 1,
-  "id": "m_demo0001",
-  "rootId": "n_root",
   "root": {
-    "id": "n_root",
     "text": "UMindMap demo",
     "note": "A **shared** map served from the `data/` folder.\n\nOpen it as `?demo.json` — it shows as a picture and is read-only. Press **Edit map** to fork your own copy.",
     "collapsed": false,
     "children": [
       {
-        "id": "n_share",
         "text": "Sharing maps 🔗",
         "note": "",
         "collapsed": false,
         "children": [
           {
-            "id": "n_dir",
             "text": "docs/data/",
             "note": "The admin drops a `*.json` file here and commits it. No server code — GitHub Pages serves the file directly.",
             "collapsed": false,
             "children": []
           },
           {
-            "id": "n_url",
             "text": "?demo.json",
             "note": "A `.json` ending = a shared file (a picture). No ending = my localStorage project (the editor).",
             "collapsed": false,
             "children": []
           },
           {
-            "id": "n_ro",
             "text": "Read-only",
             "note": "Nothing is saved until I click **Edit map** — only then is a personal copy `?demo` created.",
             "collapsed": false,
@@ -45,20 +37,17 @@
         ]
       },
       {
-        "id": "n_try",
         "text": "Try it 🚀",
         "note": "",
         "collapsed": false,
         "children": [
           {
-            "id": "n_edit",
             "text": "Edit map → fork",
             "note": "",
             "collapsed": false,
             "children": []
           },
           {
-            "id": "n_svg",
             "text": "Download SVG",
             "note": "",
             "collapsed": false,

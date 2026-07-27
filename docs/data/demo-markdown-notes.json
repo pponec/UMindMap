@@ -1,28 +1,22 @@
 {
   "meta": {
     "app": "UMindMap",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "home": "https://github.com/pponec/UMindMap",
     "project": "demo-markdown-notes",
-    "exported": "2026-07-23 16:39"
+    "exported": "2026-07-27 13:28"
   },
-  "version": 1,
-  "id": "m_test05",
-  "rootId": "n_root",
   "root": {
-    "id": "n_root",
     "text": "Markdown in notes",
     "note": "Notes are rendered as **Markdown** inside the picture, so headings, lists, tables and code have to survive the trip into the SVG.",
     "collapsed": false,
     "children": [
       {
-        "id": "n_002",
         "text": "Tables",
         "note": "Notes render **Markdown**:\n\n| Key | Action |\n|---|---|\n| `Enter` | new sibling |\n| `Tab` | indent |\n| `Alt+Enter` | description |",
         "collapsed": false,
         "children": [
           {
-            "id": "n_003",
             "text": "A table in a leaf note",
             "note": "Notes render **Markdown**:\n\n| Key | Action |\n|---|---|\n| `Enter` | new sibling |\n| `Tab` | indent |\n| `Alt+Enter` | description |",
             "collapsed": false,
@@ -31,13 +25,11 @@
         ]
       },
       {
-        "id": "n_004",
         "text": "Code and links",
         "note": "A fenced code block keeps its spacing:\n\n```\nfunction renderMarkdown(md) {\n  return html;   // 5 < 6 && \"quoted\"\n}\n```\n\nInline `code`, **bold**, _italic_ and a [link](https://github.com/pponec/UMindMap).",
         "collapsed": false,
         "children": [
           {
-            "id": "n_005",
             "text": "A code block in a leaf note",
             "note": "A fenced code block keeps its spacing:\n\n```\nfunction renderMarkdown(md) {\n  return html;   // 5 < 6 && \"quoted\"\n}\n```\n\nInline `code`, **bold**, _italic_ and a [link](https://github.com/pponec/UMindMap).",
             "collapsed": false,
@@ -46,27 +38,23 @@
         ]
       },
       {
-        "id": "n_006",
         "text": "Code wider than the bubble",
         "note": "Real code is wider than a note bubble:\n\n```\nconst rect = { x: node.x + node.width + LEAD, y: node.y - height / 2, w: NOTE_W, h: height };\nif (bubbleOverlaps(rect, placed) && !sameSubtree(node, other)) {\n    shiftSubtree(node, hit.y + hit.height + NOTE_GAP - rect.y);   // slide the whole group down\n}\n```\n\nEvery line above is longer than the bubble is wide. None of it may be lost:\nthe block wraps and keeps its indentation.",
         "collapsed": false,
         "children": [
           {
-            "id": "n_007",
             "text": "Long lines in a leaf note",
             "note": "Real code is wider than a note bubble:\n\n```\nconst rect = { x: node.x + node.width + LEAD, y: node.y - height / 2, w: NOTE_W, h: height };\nif (bubbleOverlaps(rect, placed) && !sameSubtree(node, other)) {\n    shiftSubtree(node, hit.y + hit.height + NOTE_GAP - rect.y);   // slide the whole group down\n}\n```\n\nEvery line above is longer than the bubble is wide. None of it may be lost:\nthe block wraps and keeps its indentation.",
             "collapsed": false,
             "children": []
           },
           {
-            "id": "n_008",
             "text": "Words that cannot break",
             "note": "Text can also carry things that have nowhere to break:\n\n- a URL: https://github.com/pponec/UMindMap/blob/main/docs/svg-export.js#L1-L20\n- an identifier: `documentToSvg_placeBubblesAndConnectorCorridors_v2`\n- a path: `/home/user/projects/umindmap/test/json/05-markdown-notes.json`\n\nThey wrap mid-word rather than sticking out of the bubble.",
             "collapsed": false,
             "children": []
           },
           {
-            "id": "n_009",
             "text": "A table with many columns",
             "note": "| Key | Action | Scope | Since | Note |\n|---|---|---|---|---|\n| `Enter` | new sibling | focused node | v1 | the workhorse |\n| `Alt+Enter` | description | focused node | v1 | opens the panel |",
             "collapsed": false,
@@ -75,13 +63,11 @@
         ]
       },
       {
-        "id": "n_010",
         "text": "Headings, quotes and rules",
         "note": "# A heading\n## A smaller heading\n\n> A block quote, followed by a list:\n\n1. first\n2. second\n3. third\n\n---\n\nA line ending with a backslash forces a hard break.\\\nLike this one.",
         "collapsed": false,
         "children": [
           {
-            "id": "n_011",
             "text": "The same in a leaf note",
             "note": "# A heading\n## A smaller heading\n\n> A block quote, followed by a list:\n\n1. first\n2. second\n3. third\n\n---\n\nA line ending with a backslash forces a hard break.\\\nLike this one.",
             "collapsed": false,
@@ -90,13 +76,11 @@
         ]
       },
       {
-        "id": "n_020",
         "text": "An image in a note",
         "note": "Notes can embed an image with `![alt](url)`; it scales down to the bubble width:\n\n![Train ticket — Central to Old town, one way, €29](data/train-ticket.png)",
         "collapsed": false,
         "children": [
           {
-            "id": "n_021",
             "text": "The picture comes from the data/ folder",
             "note": "The file lives beside this map in `data/`, so it also shows in a shared graph and in a downloaded SVG (while online).\n\n![Train ticket](data/train-ticket.png)",
             "collapsed": false,
@@ -105,27 +89,23 @@
         ]
       },
       {
-        "id": "n_012",
         "text": "Characters that must be escaped",
         "note": "",
         "collapsed": false,
         "children": [
           {
-            "id": "n_013",
             "text": "Angle brackets & ampersands",
             "note": "Raw `<script>`, a bare & ampersand, \"double\" and 'single' quotes, and an em-dash — all have to come out as text.",
             "collapsed": false,
             "children": []
           },
           {
-            "id": "n_014",
             "text": "Emoji and accents 🌀",
             "note": "Příliš žluťoučký kůň úpěl ďábelské ódy — diacritics, ✅ emoji and ← arrows.",
             "collapsed": false,
             "children": []
           },
           {
-            "id": "n_015",
             "text": "An empty note is no note",
             "note": "",
             "collapsed": false,

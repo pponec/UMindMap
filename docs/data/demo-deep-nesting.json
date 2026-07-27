@@ -1,53 +1,43 @@
 {
   "meta": {
     "app": "UMindMap",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "home": "https://github.com/pponec/UMindMap",
     "project": "demo-deep-nesting",
-    "exported": "2026-07-23 16:39"
+    "exported": "2026-07-27 13:28"
   },
-  "version": 1,
-  "id": "m_test02",
-  "rootId": "n_root",
   "root": {
-    "id": "n_root",
     "text": "Deep nesting 🌀",
     "note": "The welcome map with **two extra levels** added under the keyboard branch. Columns are generated per depth, so level 4 and 5 must line up and keep readable connectors.",
     "collapsed": false,
     "children": [
       {
-        "id": "n_002",
         "text": "Add & structure nodes ⌨️",
         "note": "Every action is a keystroke on the **focused** node.",
         "collapsed": false,
         "children": [
           {
-            "id": "n_003",
             "text": "Enter — new node below",
             "note": "",
             "collapsed": false,
             "children": [
               {
-                "id": "n_004",
                 "text": "Level 3 — what Enter really does",
                 "note": "It inserts a sibling _after_ the focused node and moves the caret there.",
                 "collapsed": false,
                 "children": [
                   {
-                    "id": "n_005",
                     "text": "Level 4 — at the end of a branch",
                     "note": "The new node becomes the last child of the same parent.",
                     "collapsed": false,
                     "children": [
                       {
-                        "id": "n_006",
                         "text": "Level 5 — and the caret follows it",
                         "note": "Focus always moves to the node you just made, so you can keep typing.",
                         "collapsed": false,
                         "children": []
                       },
                       {
-                        "id": "n_007",
                         "text": "Level 5 — undo puts it back",
                         "note": "",
                         "collapsed": false,
@@ -56,13 +46,11 @@
                     ]
                   },
                   {
-                    "id": "n_008",
                     "text": "Level 4 — in the middle of a branch",
                     "note": "",
                     "collapsed": false,
                     "children": [
                       {
-                        "id": "n_009",
                         "text": "Level 5 — the nodes below shift down",
                         "note": "",
                         "collapsed": false,
@@ -75,13 +63,11 @@
             ]
           },
           {
-            "id": "n_010",
             "text": "Tab — indent (become a child of the node above)",
             "note": "",
             "collapsed": false,
             "children": [
               {
-                "id": "n_011",
                 "text": "Level 3 — the first sibling cannot indent",
                 "note": "There is no previous sibling to become a child of, so the key is ignored instead of failing.",
                 "collapsed": false,
@@ -90,14 +76,12 @@
             ]
           },
           {
-            "id": "n_012",
             "text": "Shift+Tab — outdent (become a sibling of the parent)",
             "note": "",
             "collapsed": false,
             "children": []
           },
           {
-            "id": "n_013",
             "text": "↑ / ↓ — move focus between nodes",
             "note": "",
             "collapsed": false,
@@ -106,13 +90,11 @@
         ]
       },
       {
-        "id": "n_014",
         "text": "Descriptions ✏️",
         "note": "Any node can carry a longer **description** in Markdown, shown in the side panel. Press **Alt+Enter** to edit it.",
         "collapsed": false,
         "children": [
           {
-            "id": "n_015",
             "text": "Nodes with a description show a 🗒",
             "note": "See? This node has its own description.",
             "collapsed": false,
@@ -121,27 +103,23 @@
         ]
       },
       {
-        "id": "n_016",
         "text": "Saving your work 💾",
         "note": "Your map is **auto-saved in this browser**. Save / Save As export a `.json` file; Open loads one back.",
         "collapsed": false,
         "children": []
       },
       {
-        "id": "n_017",
         "text": "About UMindMap ℹ️",
         "note": "UMindMap is a **free, open-source, self-hosted** mind-mapping app — no account, no cloud, no lock-in.",
         "collapsed": false,
         "children": [
           {
-            "id": "n_018",
             "text": "Open source — Apache License 2.0",
             "note": "",
             "collapsed": false,
             "children": []
           },
           {
-            "id": "n_019",
             "text": "Source code, issues & contributions",
             "note": "Browse the code and report a bug at <github.com/pponec/UMindMap>.",
             "collapsed": false,
