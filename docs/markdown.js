@@ -1,8 +1,8 @@
-// UMind (https://pponec.github.io/UMind/) — Apache License 2.0
+// UMindMap (https://pponec.github.io/UMindMap/) — Apache License 2.0
 'use strict';
 
 /*
- * A lightweight Markdown → HTML converter for the UMind node descriptions.
+ * A lightweight Markdown → HTML converter for the UMindMap node descriptions.
  *
  * This is a JavaScript port of Ujorm's MarkdownToHtmlConverter (ujo-web). Like
  * the Java original it builds the output directly as DOM nodes, so character
