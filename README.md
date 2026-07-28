@@ -69,9 +69,9 @@ Making the phone a comfortable place to *write* a map is not on the roadmap.
 
 ## Quick start
 
-Choose the option that suits you best:
+Choose the option that suits you best.
 
-### 1. Run directly from the Internet
+### 1. Open online
 
 Open the [application](https://pponec.github.io/UMindMap/) in your browser:
 
@@ -79,7 +79,7 @@ Open the [application](https://pponec.github.io/UMindMap/) in your browser:
 https://pponec.github.io/UMindMap/
 ```
 
-All data stays on your computer. No account, no installation.
+The application is loaded from the Internet, but your mind maps remain on your computer. No account required.
 
 ### 2. Run locally
 
@@ -87,38 +87,23 @@ Download or clone the project and open `run.html` in your browser.
 
 ### 3. Start a local server with Python (optional)
 
-If you prefer serving the files over HTTP:
+To use a local server, run:
 
 ```sh
 python3 run.py
 ```
 
-Then open:
-
-```
-http://localhost:8000/
-```
-
-An optional port can be specified:
-
-```sh
-python3 run.py 9000
-```
+This starts a local HTTP server and opens the application in your default browser.
+An optional port can be specified as the first argument:
 
 ### 4. Start a local server with Java (optional)
 
-If Python is unavailable:
+Java 17+ can run the same helper script without a build step.
+An optional port can be specified as the first argument.
 
 ```sh
 java run.java
 ```
-
-(Java 17+, no build step.)
-
-An optional port can be specified:
-
-```sh
-java run.java 9000
 
 ## Where your maps live — and how to share one
 
