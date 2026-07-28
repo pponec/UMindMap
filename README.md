@@ -69,23 +69,56 @@ Making the phone a comfortable place to *write* a map is not on the roadmap.
 
 ## Quick start
 
-Open the `run.html` page in your browser from the project root directory.
-You can also run the application on a local server.
+Choose the option that suits you best:
+
+### 1. Run directly from the Internet
+
+Open the [application](https://pponec.github.io/UMindMap/) in your browser:
 
 ```
-python3 run.py       # then open http://localhost:8000/
+https://pponec.github.io/UMindMap/
 ```
 
-No Python?
-`java run.java` does the same (Java 17+, no build step).
-Both take an optional port: `python3 run.py 9000`.
-A plain static server works too:
+All data stays on your computer. No account, no installation.
+
+### 2. Run locally
+
+Download or clone the project and open `run.html` in your browser.
+
+### 3. Start a local server with Python (optional)
+
+If you prefer serving the files over HTTP:
+
+```sh
+python3 run.py
+```
+
+Then open:
 
 ```
-python3 -m http.server -d docs 8000
+http://localhost:8000/
 ```
 
-Opening `docs/index.html` via `file://` also works, but browsers may switch localStorage off there; use **Save** / **Open** to keep a `.json` file instead.
+An optional port can be specified:
+
+```sh
+python3 run.py 9000
+```
+
+### 4. Start a local server with Java (optional)
+
+If Python is unavailable:
+
+```sh
+java run.java
+```
+
+(Java 17+, no build step.)
+
+An optional port can be specified:
+
+```sh
+java run.java 9000
 
 ## Where your maps live — and how to share one
 
