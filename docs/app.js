@@ -321,6 +321,18 @@ function caretOffset() {
   return sel.getRangeAt(0).startOffset;
 }
 
+/** True when the caret sits at the very start of a non-empty node. */
+function caretAtStart(el) {
+  const sel = window.getSelection();
+  if (!sel || !sel.rangeCount || !sel.isCollapsed) return false;
+  if (readNodeText(el) === '') return false; // empty node: never "at start"
+  // Measure the text between the node's start and the caret, so a node split
+  // into several text nodes (after a paste) cannot report a false start.
+  const before = sel.getRangeAt(0).cloneRange();
+  before.setStart(el, 0);
+  return before.toString().length === 0;
+}
+
 /** Place the caret inside `el` at `offset` (clamped to the text length). */
 function placeCaret(el, offset) {
   const sel = window.getSelection();
@@ -346,21 +358,36 @@ function visibleNodes() {
 /* Structural operations (assignment §4 & §5)                             */
 /* ---------------------------------------------------------------------- */
 
-/** Enter: create a sibling below `id` and focus it. */
-function insertSiblingAfter(id) {
+/**
+ * Enter: create an empty node next to `id` and focus it. Where it lands
+ * follows the caret and what the user can actually see:
+ *   - caret at the very start of a non-empty node (`atStart`) -> a sibling
+ *     *above* it, which reads as "I need an item here";
+ *   - a node whose children are on display -> its new first child, since a
+ *     sibling would sit past the whole subtree and look unrelated;
+ *   - anything else (a leaf, a collapsed parent, an empty node) -> a sibling
+ *     below. A collapsed parent behaves exactly like a leaf: its children are
+ *     invisible, so putting the new node inside them would be a surprise.
+ * The root has no sibling list (§2), so there a child is the only option.
+ */
+function insertNode(id, atStart) {
   const path = findPath(doc.root, id);
   const node = path[path.length - 1];
   const parent = path[path.length - 2];
+  const showsChildren = node.children.length > 0 && !node.collapsed;
   snapshot();
   const fresh = makeNode('');
-  if (!parent) {
-    // On the root there is no sibling list; create a child instead (§2 has a
-    // single root, so "sibling of root" is impossible — a new branch it is).
+  if (atStart && parent) {
+    parent.children.splice(parent.children.indexOf(node), 0, fresh);
+  } else if (showsChildren) {
+    node.children.unshift(fresh);
+  } else if (parent) {
+    parent.children.splice(parent.children.indexOf(node) + 1, 0, fresh);
+  } else {
+    // The root with nothing on display: a new branch it is, and it has to be
+    // visible, so a collapsed root opens up.
     node.children.push(fresh);
     node.collapsed = false;
-  } else {
-    const index = parent.children.indexOf(node);
-    parent.children.splice(index + 1, 0, fresh);
   }
   currentId = fresh.id;
   currentOffset = 0;
@@ -468,9 +495,9 @@ outlineEl.addEventListener('keydown', (e) => {
   switch (e.key) {
     case 'Enter':
       e.preventDefault();
-      // Alt+Enter edits the node's description instead of adding a new sibling.
+      // Alt+Enter edits the node's description instead of adding a node.
       if (e.altKey) enterNoteEdit(id);
-      else insertSiblingAfter(id);
+      else insertNode(id, caretAtStart(el));
       return;
 
     case 'Tab':

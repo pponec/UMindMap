@@ -26,7 +26,7 @@ The text structure is the source of truth, and the graphical layout is generated
 
 | Key | Does |
 |---|---|
-| <kbd>Enter</kbd> | new node below |
+| <kbd>Enter</kbd> | new node — below, as the first child of an expanded node, or above it with the caret at the start |
 | <kbd>Tab</kbd> / <kbd>Shift</kbd>+<kbd>Tab</kbd> | indent / outdent |
 | <kbd>↑</kbd> <kbd>↓</kbd> | move between nodes |
 | <kbd>Alt</kbd>+<kbd>↑</kbd> / <kbd>Alt</kbd>+<kbd>↓</kbd> | reorder among siblings |

@@ -36,7 +36,18 @@
         text: 'Add & structure nodes ⌨️',
         note: 'Every action is a keystroke on the **focused** node. Click a node to focus it, then try these:',
         children: [
-          { text: 'Enter — new node below', note: '', children: [] },
+          {
+            text: 'Enter — new node',
+            note:
+              'The new node lands where you are looking:\n\n' +
+              '- normally **below** the focused node;\n' +
+              '- as its **first child** when its children are expanded, ' +
+              'since a sibling would end up past the whole branch;\n' +
+              '- **above** it when the caret sits at the very start of the text.\n\n' +
+              'A **collapsed** node counts as a leaf: its hidden children stay ' +
+              'untouched and the new node becomes a sibling below.',
+            children: [],
+          },
           { text: 'Tab — indent (become a child of the node above)', note: '', children: [] },
           { text: 'Shift+Tab — outdent (become a sibling of the parent)', note: '', children: [] },
           { text: '↑ / ↓ — move focus between nodes', note: '', children: [] },
