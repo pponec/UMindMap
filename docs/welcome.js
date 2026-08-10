@@ -73,7 +73,8 @@
           '- > block quotes\n' +
           '- [links](https://ujorm.org) and images\n' +
           '- tables and fenced code blocks\n\n' +
-          '```\ncode block: escaped & preserved\n```',
+          '```\ncode block: escaped & preserved\n```\n\n' +
+          'One click on an `inline code` span copies it to the clipboard.',
         children: [
           {
             text: 'Nodes with a description show a 🗒 — click it to open',

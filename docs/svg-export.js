@@ -122,6 +122,10 @@
 .umnote pre { background: #f3ecd0; border-radius: 4px; padding: 5px 6px;
   white-space: pre-wrap; overflow-wrap: anywhere; }
 .umnote pre code { background: none; padding: 0; }
+/* Click-to-copy on an inline code span works in the on-screen graph too (the
+   listener is app.js's); in a downloaded file this is only a cursor hint. */
+.umnote code.copy-code { cursor: pointer; }
+.umnote code.copy-code.copied { background: #d7ecd0; outline: 1px solid #4a9a3c; }
 .umnote blockquote { padding-left: 8px; border-left: 2px solid #e0cf8a; }
 .umnote a { color: #2563eb; }
 .umnote img { max-width: 100%; height: auto; }

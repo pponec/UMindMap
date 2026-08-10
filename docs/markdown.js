@@ -15,6 +15,10 @@
  * GFM tables and paragraphs (a trailing "\" forces a <br>). Supported inline:
  * `code`, **bold**, _italic_, [text](url) links and ![alt](src) images.
  *
+ * An inline code span is marked with the class COPY_CLASS ("copy-code") and a
+ * hint in its title, so the host page can offer click-to-copy on it (app.js
+ * does; the marker is inert wherever nobody listens, e.g. a downloaded SVG).
+ *
  * Intentionally omitted (as in the Java version): nested lists, setext
  * headings, reference links, HTML pass-through, footnotes, task lists and
  * strike-through. Inline emphasis uses one non-greedy regex, so pathological
@@ -42,6 +46,10 @@
 
   /** The break marker inserted between paragraph lines joined with a hard "\". */
   const BREAK = '\n';
+
+  /** Marker class + tooltip put on every inline code span (see the header). */
+  const COPY_CLASS = 'copy-code';
+  const COPY_HINT = 'Click to copy';
 
   // --- DOM helpers ------------------------------------------------------
 
@@ -227,7 +235,10 @@
         addText(target, text.slice(from, m.index));
       }
       if (m[1] != null) {                       // inline code
-        add(target, 'code').textContent = normalizeCodeSpan(m[2]);
+        const code = add(target, 'code');
+        code.setAttribute('class', COPY_CLASS);
+        code.setAttribute('title', COPY_HINT);
+        code.textContent = normalizeCodeSpan(m[2]);
       } else if (m[3] != null) {                // image ![alt](src)
         const img = add(target, 'img');
         img.setAttribute('src', safeUrl(m[4], UNSAFE_SRC, ''));
@@ -363,5 +374,6 @@
 
   global.renderMarkdown = renderMarkdown;
   global.renderMarkdownInto = renderMarkdownInto;
+  global.MD_COPY_CLASS = COPY_CLASS;
 
 })(window);

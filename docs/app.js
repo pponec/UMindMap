@@ -863,6 +863,64 @@ detailGrip.addEventListener('pointerup', () => {
 });
 
 /* ---------------------------------------------------------------------- */
+/* Click-to-copy for inline `code` spans                                  */
+/*                                                                        */
+/* markdown.js marks every inline code span with MD_COPY_CLASS; a single  */
+/* delegated listener on the document turns one click on such a span into */
+/* a clipboard copy. Delegation (rather than a handler per element) is    */
+/* what makes it work everywhere the renderer's output lands: the detail  */
+/* panel (assigned via innerHTML, so no live handlers survive) and the    */
+/* note bubbles of the inlined graph view alike.                          */
+/* ---------------------------------------------------------------------- */
+
+/** How long the "Copied" feedback stays on the clicked span. */
+const COPY_FEEDBACK_MS = 1200;
+
+/** Copy text to the clipboard; async-clipboard first, execCommand fallback
+ *  (the async API needs a secure context, which file:// is not). */
+async function copyText(text) {
+  if (navigator.clipboard && window.isSecureContext) {
+    try {
+      await navigator.clipboard.writeText(text);
+      return true;
+    } catch (_) { /* fall through to the legacy path */ }
+  }
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.setAttribute('readonly', '');
+  ta.style.cssText = 'position:fixed;top:0;left:-9999px;opacity:0';
+  document.body.appendChild(ta);
+  ta.select();
+  let ok = false;
+  try { ok = document.execCommand('copy'); } catch (_) { ok = false; }
+  ta.remove();
+  return ok;
+}
+
+/** Flash the outcome on the span itself (no modal, no toast). The class drives
+ *  a CSS ::after label, and the title carries it for screen readers. */
+function flashCopied(el, ok) {
+  const hint = el.getAttribute('title');
+  el.classList.remove('copied', 'copy-failed');
+  void el.offsetWidth; // restart the animation on a repeated click
+  el.classList.add(ok ? 'copied' : 'copy-failed');
+  el.setAttribute('title', ok ? 'Copied' : 'Copy failed — select and press Ctrl+C');
+  setTimeout(() => {
+    el.classList.remove('copied', 'copy-failed');
+    if (hint !== null) el.setAttribute('title', hint);
+  }, COPY_FEEDBACK_MS);
+}
+
+document.addEventListener('click', (e) => {
+  const el = e.target.closest && e.target.closest('code.' + MD_COPY_CLASS);
+  if (!el) return;
+  // A drag that selected text inside the span means "select", not "copy".
+  const sel = window.getSelection();
+  if (sel && !sel.isCollapsed && sel.toString().trim() !== '') return;
+  copyText(el.textContent).then((ok) => flashCopied(el, ok));
+});
+
+/* ---------------------------------------------------------------------- */
 /* Persistence (Phase 0 stand-in for the server)                          */
 /*                                                                        */
 /* Two layers:                                                            */
