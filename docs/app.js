@@ -20,7 +20,7 @@
 // repository, which carries the app's documentation and a link to run it live,
 // and which the toolbar wordmark links to.
 const APP_NAME = 'UMindMap';
-const APP_VERSION = '1.0.2';
+const APP_VERSION = '1.0.3';
 const APP_HOME = 'https://github.com/pponec/UMindMap';
 
 /* ---------------------------------------------------------------------- */
