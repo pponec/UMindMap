@@ -452,7 +452,15 @@ li:hover > .row > .drag-grip { opacity: 0.6; }
 .row.drop-before::before { top: -1px; }
 .row.drop-after::after { bottom: -1px; }
 /* "after" an expanded branch means "first child": indent the line to show it. */
-.row.drop-after.drop-into::after { left: 52px; }
+.row.drop-after.drop-indent::after { left: 52px; }
+/* Over the middle of a branch row the drop goes inside it (as its last child).
+   No line then — the whole row lights up, since the target is the node. */
+.row.drop-inside {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+  border-radius: 5px;
+  background: var(--focus-bg);
+}
 
 /* ---- Description dialog ---- */
 .note-dialog {

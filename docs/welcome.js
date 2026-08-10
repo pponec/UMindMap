@@ -93,7 +93,14 @@
       },
       {
         text: 'Move nodes with the mouse ⠿',
-        note: 'Prefer dragging? Grab the ⠿ grip on the left of a node and drop it before or after another node — at any level — to reorder or re-parent it.',
+        note:
+          'Prefer dragging? Grab the ⠿ grip on the left of a node and drop it ' +
+          'before or after another node — at any level — to reorder or ' +
+          're-parent it.\n\n' +
+          'Dropping it **on the middle of a node that has children** makes it ' +
+          'the last child of that branch. A folded branch (one showing ▸) ' +
+          'stays folded, so this files the node away out of sight. The thin ' +
+          'top and bottom edges of such a row still mean before / after.',
         children: [],
       },
       {

@@ -1518,21 +1518,47 @@ function setStatus(text) {
 /* into its own subtree, or as a sibling of the root is disallowed. To    */
 /* remove the feature: delete this whole block, the grip block in         */
 /* buildNodeLi, the DND_ENABLED flag, and the .drag-grip/.drop-* CSS.     */
+/*                                                                        */
+/* A leaf's row splits in two — drop in the top half to land before it,   */
+/* in the bottom half to land after it. A row that HAS CHILDREN splits in  */
+/* three instead: its middle band means "inside", appending the dragged    */
+/* node to the end of that branch's children, folded or not. Dropping on   */
+/* the node itself is what "make it a child" reads as, so the same gesture */
+/* means the same thing everywhere; for a folded branch it is also the     */
+/* only way to file a node into it without unfolding it first. The thin    */
+/* edge bands keep before/after reachable, so nothing is lost.             */
 /* ---------------------------------------------------------------------- */
 
 if (DND_ENABLED) {
+  /** Share of a branch row's height given to the before / after edges. */
+  const EDGE_BAND = 0.3;
+
   let draggedId = null;
   let draggedNode = null;
   let markedRow = null; // row currently showing a drop indicator
-  let dropPos = null; // 'before' | 'after'
+  let dropPos = null; // 'before' | 'after' | 'inside'
 
   const containsId = (node, id) =>
     node.id === id || node.children.some((c) => containsId(c, id));
 
+  /** A node with children — the only kind of target that takes "inside". */
+  const isBranch = (node) => !!node && node.children.length > 0;
+
   const clearMark = () => {
-    if (markedRow) markedRow.classList.remove('drop-before', 'drop-after', 'drop-into');
+    if (markedRow) {
+      markedRow.classList.remove('drop-before', 'drop-after', 'drop-inside', 'drop-indent');
+    }
     markedRow = null;
     dropPos = null;
+  };
+
+  /** Where in the row the pointer is asking to drop. */
+  const dropPosition = (y, rect, node) => {
+    const ratio = (y - rect.top) / rect.height;
+    if (!isBranch(node)) return ratio < 0.5 ? 'before' : 'after';
+    if (ratio < EDGE_BAND) return 'before';
+    if (ratio > 1 - EDGE_BAND) return 'after';
+    return 'inside';
   };
 
   /** True when `targetId` cannot receive the dragged node. */
@@ -1562,17 +1588,16 @@ if (DND_ENABLED) {
 
     e.preventDefault(); // permit the drop
     e.dataTransfer.dropEffect = 'move';
-    const rect = row.getBoundingClientRect();
-    const pos = e.clientY - rect.top < rect.height / 2 ? 'before' : 'after';
+    const targetNode = nodeById(targetId);
+    const pos = dropPosition(e.clientY, row.getBoundingClientRect(), targetNode);
     if (row !== markedRow || pos !== dropPos) {
       clearMark();
       markedRow = row;
       dropPos = pos;
-      row.classList.add(pos === 'before' ? 'drop-before' : 'drop-after');
+      row.classList.add('drop-' + pos);
       // "after" an expanded branch drops as its first child — indent the hint.
-      const targetNode = nodeById(targetId);
       if (pos === 'after' && targetNode && !targetNode.collapsed && targetNode.children.length) {
-        row.classList.add('drop-into');
+        row.classList.add('drop-indent');
       }
     }
   });
@@ -1594,7 +1619,7 @@ if (DND_ENABLED) {
     draggedNode = null;
   });
 
-  /** Move `dragId` to just before/after `targetId` in the target's parent. */
+  /** Move `dragId` before/after `targetId`, or inside it (a branch). */
   function moveByDrop(dragId, targetId, pos) {
     if (invalidTarget(targetId)) return;
     const dragPath = findPath(doc.root, dragId);
@@ -1608,7 +1633,14 @@ if (DND_ENABLED) {
 
     snapshot();
     dragParent.children.splice(dragParent.children.indexOf(dragged), 1);
-    if (pos === 'after' && !target.collapsed && target.children.length) {
+    currentId = dragId;
+    if (pos === 'inside') {
+      // Appended at the end of the branch. A folded branch is left folded —
+      // filing the node out of sight is the point — but then the node has no
+      // row to focus, so focus falls back to the branch that swallowed it.
+      target.children.push(dragged);
+      if (target.collapsed) currentId = targetId;
+    } else if (pos === 'after' && !target.collapsed && target.children.length) {
       // Dropping just below an expanded branch means "become its first child"
       // (visually the same spot as "before its first child").
       target.children.unshift(dragged);
@@ -1618,7 +1650,6 @@ if (DND_ENABLED) {
       if (pos === 'after') idx += 1;
       targetParent.children.splice(idx, 0, dragged);
     }
-    currentId = dragId;
     currentOffset = Infinity;
     render();
   }
