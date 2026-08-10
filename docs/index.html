@@ -95,6 +95,24 @@
     </form>
   </dialog>
 
+  <!-- Raised when a save would overwrite a version another tab wrote in the
+       meantime. Both answers keep every edit: the copy becomes a project of
+       its own, and "load the other version" is undoable with Ctrl+Z. -->
+  <dialog id="conflict-dialog" class="note-dialog">
+    <form method="dialog">
+      <h2 class="note-heading">Changed in another tab</h2>
+      <p class="conflict-text">
+        <strong id="conflict-name"></strong> was changed in another tab while you
+        were editing it here. Nothing has been overwritten.
+      </p>
+      <menu class="note-actions">
+        <span class="note-hint">Esc: decide later</span>
+        <button type="button" id="conflict-theirs" class="secondary">Load the other version</button>
+        <button value="copy" class="primary">Save mine as a copy</button>
+      </menu>
+    </form>
+  </dialog>
+
   <!-- Full-size logo viewer: click the toolbar logo to open, click anywhere
        (or press Esc) to close. -->
   <dialog id="logo-dialog" class="logo-dialog">

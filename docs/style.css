@@ -511,9 +511,16 @@ li:hover > .row > .drag-grip { opacity: 0.6; }
   display: flex;
   align-items: center;
   justify-content: flex-end;
+  flex-wrap: wrap; /* two long answers + a hint must not run off a phone */
   gap: 8px;
   margin: 0;
   padding: 0;
+}
+/* The conflict dialog's explanation (see #conflict-dialog). */
+.conflict-text { margin: 0; font-size: 14px; line-height: 1.5; }
+.conflict-text strong {
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 0.95em;
 }
 .note-hint {
   margin-right: auto;

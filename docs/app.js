@@ -69,7 +69,9 @@ function assignNodeIds(node) {
  *  the data itself (a field present or missing), and the same approach is
  *  meant to cover future ones too. */
 function normalizeLoadedDoc(d) {
-  if (d) { delete d.meta; delete d.id; }
+  // The one funnel every load passes through, so it is also where the revision
+  // this tab now works from is picked up — before the header carrying it goes.
+  if (d) { docRev = revOf(d); delete d.meta; delete d.id; }
   if (d && d.root) {
     assignNodeIds(d.root);
     d.rootId = d.root.id;
@@ -150,6 +152,14 @@ const redoStack = [];
 
 let currentId = doc.rootId;   // id of the node that should hold focus
 let currentOffset = 0;        // caret offset to restore after a re-render
+
+// Multi-tab concurrency (see "Two tabs, one project" below). `docRev` is the
+// stored revision this tab is working from, `docDirty` says it has changes the
+// store has not seen yet, and `adopting` suppresses the save that a re-render
+// would otherwise echo back while taking another tab's version over.
+let docRev = 0;
+let docDirty = false;
+let adopting = false;
 
 // Text-edit coalescing: a burst of typing produces a single undo entry.
 let textBurst = false;
@@ -697,6 +707,7 @@ function commitNoteEdit() {
   }
   currentId = id;
   render(); // refresh the outline marker + detail view, focus the node
+  flushPendingRemote(); // a version another tab wrote while this was open
 }
 
 /** Discard edits and return to view mode. */
@@ -706,6 +717,7 @@ function cancelNoteEdit() {
   exitNoteEditUI();
   currentId = id;
   render();
+  flushPendingRemote();
 }
 
 // Leaving the textarea is the universal commit signal — it fires whether the
@@ -954,7 +966,16 @@ function fileMeta() {
   const m = { app: APP_NAME, version: APP_VERSION, home: APP_HOME };
   if (currentFileName) m.project = currentFileName;
   m.exported = exportStamp();
+  m.rev = docRev; // the store's concurrency token, see "Two tabs, one project"
   return m;
+}
+
+/** The revision a parsed document was stored under. A file written before
+ *  revisions existed reads as 0, which is exactly right: it is the oldest
+ *  version anyone can be holding. */
+function revOf(parsed) {
+  const rev = parsed && parsed.meta && parsed.meta.rev;
+  return typeof rev === 'number' && isFinite(rev) ? rev : 0;
 }
 
 /** Serialise the document, trimming node text (§5: trim on serialisation).
@@ -985,6 +1006,10 @@ function loadDocFromText(text, source) {
     if (!parsed.root) throw new Error('missing root');
     endTextBurst();
     doc = normalizeLoadedDoc(parsed);
+    // A file carries the revision of the store it was exported from, which
+    // says nothing about this browser's copy: opening it means taking that
+    // project key over, so we start from whatever the key holds now.
+    rebaseRev();
     undoStack.length = 0; // history belongs to the previous document
     redoStack.length = 0;
     currentId = doc.rootId;
@@ -1032,20 +1057,33 @@ function activeStorageKey() {
 /** Persist the document to its project key immediately (used by Save). The
  *  welcome map is ephemeral and must never land in storage — that invariant
  *  lives here rather than in each caller, so nobody can save it by accident.
- *  Save As clears the flag first, which is what turns it into a real project. */
+ *  Save As clears the flag first, which is what turns it into a real project.
+ *  Returns false when the write was refused because another tab got there
+ *  first; the conflict dialog is then open and owns what happens next. */
 function persistProject() {
-  if (!storageOk || doc.isWelcome || doc.isShared) return;
+  if (!storageOk || doc.isWelcome || doc.isShared) return true;
+  const key = activeStorageKey();
+  const stored = storedRev(key);
+  if (stored !== null && stored !== docRev) {
+    openConflictDialog(key);
+    return false;
+  }
   try {
-    localStorage.setItem(activeStorageKey(), serialise());
+    docRev += 1; // read back by fileMeta() inside serialise()
+    localStorage.setItem(key, serialise());
     localStorage.setItem(LAST_KEY, currentFileName || '');
+    docDirty = false;
+    return true;
   } catch (e) {
+    docRev -= 1; // nothing landed, so the base revision has not moved
     console.warn('localStorage save failed:', e);
+    return false;
   }
 }
 
 /** Debounced auto-save of the whole document to its project key. */
 function scheduleSave() {
-  if (!storageOk) return;
+  if (!storageOk || adopting) return;
   // The welcome/instructions map is ephemeral: edits to it are a preview, not a
   // project, so they are not persisted. It becomes a real (saved) project only
   // via New/Open or Save As (which clears isWelcome). Until then it re-seeds
@@ -1057,11 +1095,11 @@ function scheduleSave() {
     setStatus(doc.isShared ? 'shared' : 'preview');
     return;
   }
+  docDirty = true;
   setStatus('editing…');
   clearTimeout(saveTimer);
   saveTimer = setTimeout(() => {
-    persistProject();
-    setStatus('saved');
+    if (persistProject()) setStatus('saved');
   }, 500);
 }
 
@@ -1069,13 +1107,207 @@ function scheduleSave() {
 function readStoredDoc(key) {
   try {
     const raw = localStorage.getItem(key);
-    if (!raw) return null;
-    const parsed = JSON.parse(raw);
-    if (parsed && parsed.root) return parsed;
+    return raw ? safeParseDoc(raw) : null;
   } catch (e) {
     console.warn('localStorage load failed:', e);
+    return null;
+  }
+}
+
+/* ---------------------------------------------------------------------- */
+/* Two tabs, one project                                                  */
+/*                                                                        */
+/* The same project open twice used to mean the last writer silently won.  */
+/* Every stored document therefore carries `meta.rev`, a counter bumped on */
+/* each write, and a tab remembers the revision it is working from         */
+/* (`docRev`). A save that finds a different revision in the store does    */
+/* NOT overwrite it. A counter rather than a timestamp: two debounced      */
+/* saves can land in the same millisecond, and a clock can step backwards, */
+/* which would make a stale write look like the newer one.                 */
+/*                                                                        */
+/* Detection needs no polling — writing to localStorage fires a `storage`  */
+/* event in every OTHER tab of the origin. What happens next depends on    */
+/* whether this tab has diverged:                                          */
+/*                                                                        */
+/*   clean (nothing unsaved) — adopt the incoming version silently, so two */
+/*     tabs on one project behave like one document in two windows. The    */
+/*     caret is carried across by its position in the tree, since node ids */
+/*     are session-local and the incoming copy has its own.                */
+/*   diverged — the save is refused and the conflict dialog asks: keep     */
+/*     mine as a copy, or load the other version. Neither loses work: the  */
+/*     copy is a project of its own, and "load theirs" pushes an undo      */
+/*     snapshot first, so Ctrl+Z brings this tab's version back.           */
+/*                                                                        */
+/* Under file:// there is no shared storage and none of this runs.         */
+/* ---------------------------------------------------------------------- */
+
+/** The revision stored under `key`, or null when nothing is stored there. */
+function storedRev(key) {
+  const parsed = readStoredDoc(key);
+  return parsed ? revOf(parsed) : null;
+}
+
+/** Start working from whatever revision the active key holds now. Used when
+ *  this tab deliberately takes the key over (New, Open, Save As, a fork): the
+ *  point of those is to become the project, not to merge with it. */
+function rebaseRev() {
+  if (!storageOk) return;
+  docRev = storedRev(activeStorageKey()) || 0;
+  docDirty = false;
+}
+
+/** The path of child indices from the root down to `id` (null when not found).
+ *  Survives a reload, which fresh node ids do not — see assignNodeIds. */
+function nodeIndexPath(root, id) {
+  if (root.id === id) return [];
+  for (let i = 0; i < root.children.length; i++) {
+    const sub = nodeIndexPath(root.children[i], id);
+    if (sub) return [i].concat(sub);
   }
   return null;
+}
+
+/** Walk an index path as far as the tree allows, returning the deepest node
+ *  reached — so a caret whose node is gone lands on its nearest surviving
+ *  ancestor instead of jumping to the root. */
+function nodeAtIndexPath(root, path) {
+  let node = root;
+  for (const i of path || []) {
+    if (!node.children[i]) break;
+    node = node.children[i];
+  }
+  return node;
+}
+
+/** A remote version that arrived while the note editor was open. */
+let pendingRemote = null;
+
+/** Take another tab's version of the current project as ours. */
+function adoptRemote(parsed) {
+  const caretPath = nodeIndexPath(doc.root, currentId);
+  endTextBurst();
+  // The undo stack is left alone: this is not an edit of ours to take back,
+  // and clearing it would throw away history the user still owns. Undoing past
+  // this point simply diverges again, which the conflict dialog then handles.
+  adopting = true; // a render must not echo this straight back into storage
+  try {
+    doc = normalizeLoadedDoc(parsed); // also picks up the incoming revision
+    currentId = nodeAtIndexPath(doc.root, caretPath).id;
+    docDirty = false;
+    render();
+  } finally {
+    adopting = false;
+  }
+  setStatus('synced from another tab');
+}
+
+const conflictDialog = document.getElementById('conflict-dialog');
+const conflictNameEl = document.getElementById('conflict-name');
+let conflictKey = null; // the project key under negotiation, or null
+
+window.addEventListener('storage', (e) => {
+  if (e.storageArea !== localStorage) return;
+  if (e.key !== activeStorageKey() || e.newValue === null) return;
+  if (doc.isWelcome || doc.isShared || conflictKey !== null) return;
+  const parsed = safeParseDoc(e.newValue);
+  if (!parsed || revOf(parsed) === docRev) return; // our own echo, or unusable
+  // A tab with unsaved changes keeps them: its own next save raises the
+  // conflict, which is the moment the user has something to decide about.
+  if (docDirty) return;
+  // Never yank the ground from under an open note editor — updateDetail()
+  // refuses to repaint it, and a render would steal the caret out of it.
+  if (editingNoteId !== null) {
+    pendingRemote = parsed;
+    return;
+  }
+  adoptRemote(parsed);
+});
+
+/** Adopt a deferred remote version once the note editor is out of the way. */
+function flushPendingRemote() {
+  const parsed = pendingRemote;
+  pendingRemote = null;
+  if (parsed && !docDirty && conflictKey === null) adoptRemote(parsed);
+}
+
+/** Parse a stored document, returning null rather than throwing. */
+function safeParseDoc(raw) {
+  try {
+    const parsed = JSON.parse(raw);
+    return parsed && parsed.root ? parsed : null;
+  } catch (e) {
+    return null;
+  }
+}
+
+/* ---- The conflict dialog ---- */
+
+// Only the recommended answer is a submit button, so Enter cannot discard this
+// tab's work by accident (the same pattern as the name dialog's Cancel).
+document
+  .getElementById('conflict-theirs')
+  .addEventListener('click', () => conflictDialog.close('theirs'));
+
+/** Refuse to overwrite and ask what to do. Never opens twice over itself. */
+function openConflictDialog(key) {
+  if (conflictKey !== null) return;
+  conflictKey = key;
+  clearTimeout(saveTimer); // no save fires while the question is on screen
+  setStatus('conflict');
+  conflictNameEl.textContent = currentFileName || 'untitled';
+  conflictDialog.showModal();
+}
+
+conflictDialog.addEventListener('close', () => {
+  const key = conflictKey;
+  const choice = conflictDialog.returnValue;
+  conflictKey = null;
+  if (key === null) return;
+  if (choice === 'copy') keepMineAsCopy();
+  else if (choice === 'theirs') loadTheirVersion(key);
+  else setStatus('conflict — not saved'); // Esc: decide later, nothing written
+});
+
+/** A free project key derived from `base`, e.g. "my-map-conflict-1204". */
+function conflictCopyName(base) {
+  const d = new Date();
+  const pad2 = (n) => String(n).padStart(2, '0');
+  const stem = base + '-conflict-' + pad2(d.getHours()) + pad2(d.getMinutes());
+  let name = stem;
+  for (let i = 2; localStorage.getItem(PROJECT_PREFIX + name) !== null; i++) {
+    name = stem + '-' + i;
+  }
+  return name;
+}
+
+/** Keep this tab's version by turning it into a project of its own. The other
+ *  tab's project is left exactly as it was. */
+function keepMineAsCopy() {
+  const name = conflictCopyName(currentFileName || 'untitled');
+  currentFileName = name;
+  fileHandle = null; // the old handle points at the file of the other project
+  delete doc.isWelcome;
+  delete doc.isShared;
+  docRev = 0; // a key of its own, so nobody else's revision applies
+  docDirty = true;
+  if (persistProject()) {
+    updateFileLabel(); // also moves the address onto the copy
+    setStatus('saved as "' + name + '"');
+  }
+}
+
+/** Drop this tab's divergence and continue from the other tab's version. The
+ *  undo snapshot goes on first, so Ctrl+Z is a full way back. */
+function loadTheirVersion(key) {
+  const parsed = readStoredDoc(key);
+  if (!parsed) { // vanished meanwhile — our version is all that is left
+    rebaseRev();
+    docDirty = true;
+    scheduleSave();
+    return;
+  }
+  snapshot();
+  adoptRemote(parsed);
 }
 
 /* ---- Projects & export: New / Open / Save / Save As ----
@@ -1221,6 +1453,7 @@ async function saveFileAs() {
   fileHandle = handle; // may be null (fallback)
   delete doc.isWelcome; // naming it makes it a real project: enable persistence
   delete doc.isShared;  // (defensive) a named project is never a read-only file
+  rebaseRev();      // naming a map claims that key, whatever was under it
   persistProject(); // move the working copy to the new name's key immediately
   updateFileLabel();
 
@@ -1290,6 +1523,7 @@ function newFile() {
   doc = newDocument();
   fileHandle = null;
   currentFileName = null; // unnamed until Save As
+  rebaseRev();            // "untitled" may already hold another tab's project
   undoStack.length = 0;
   redoStack.length = 0;
   currentId = doc.rootId;
@@ -1453,6 +1687,7 @@ async function showGraph() {
 function leaveGraph() {
   if (doc.isShared) {
     delete doc.isShared; // it is now an ordinary, saveable project
+    rebaseRev();         // the fork claims its key like any other new project
     persistProject();    // write the fork before the address changes to it
   }
   location.href = projectUrl(projectLabel(), false).href;
