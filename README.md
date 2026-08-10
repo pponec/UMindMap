@@ -35,6 +35,9 @@ The text structure is the source of truth, and the graphical layout is generated
 | <kbd>Ctrl</kbd>+<kbd>Z</kbd> / <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Z</kbd> | undo / redo |
 
 The mouse is welcome too: drag the ⠿ grip to move a branch anywhere, click ▸ / ▾ to fold one away.
+Drop a branch on the *middle* of another node to make it the last child of that node — which works on a folded branch as well, so you can file something away without unfolding it first; the thin top and bottom edges of a row still mean "before" and "after".
+
+A description is Markdown, and anything you put in `backticks` is copied to the clipboard by a single click on it — handy for the commands and paths a map tends to collect.
 
 ### 🖼 Present — one click to a picture
 
@@ -114,6 +117,10 @@ There is no server, no account and no sync: nothing you type ever leaves your ma
 localStorage is a standard part of **every** browser, so auto-save needs nothing special — no Chrome, no extension, no permission prompt.
 (The one browser-specific nicety is *Save* writing straight back to a real file on disk, which needs the File System Access API and therefore Chromium; everywhere else the same button simply downloads the file.
 Serve the app over `http` rather than opening it as `file://`, where some browsers do switch storage off.)
+
+**The same map in two tabs is safe.**
+Open one project twice and the tabs keep each other up to date — the one you are not typing in follows along, caret and all, so two windows behave like one document.
+If both of them have unsaved changes, nothing is overwritten silently: you are asked whether to keep your version as a separate copy or to take the other one, and even that is undoable with <kbd>Ctrl</kbd>+<kbd>Z</kbd>.
 
 That also means a map is **private to one browser on one device**.
 It is not visible to anyone else, and it will not follow you to your phone or to another browser on the same computer.
