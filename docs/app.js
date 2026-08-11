@@ -701,25 +701,28 @@ function commitNoteEdit() {
   const id = editingNoteId;
   const node = nodeById(id);
   const next = detailNoteText.value.replace(/\r/g, '');
+  let dirty = docDirty; // read before render() below marks it dirty regardless
   exitNoteEditUI();
   if (node && (node.note || '') !== next) {
     endTextBurst();
     snapshot();
     node.note = next;
+    dirty = true;
   }
   currentId = id;
   render(); // refresh the outline marker + detail view, focus the node
-  flushPendingRemote(); // a version another tab wrote while this was open
+  flushPendingRemote(dirty); // a version another tab wrote while this was open
 }
 
 /** Discard edits and return to view mode. */
 function cancelNoteEdit() {
   if (editingNoteId === null) return;
   const id = editingNoteId;
+  const dirty = docDirty;
   exitNoteEditUI();
   currentId = id;
   render();
-  flushPendingRemote();
+  flushPendingRemote(dirty);
 }
 
 // Leaving the textarea is the universal commit signal — it fires whether the
@@ -942,18 +945,29 @@ async function copyText(text) {
   return ok;
 }
 
+/** The flash currently on screen: { el, hint, timer }, or null. Only one runs at
+ *  a time, so a second click cannot restore the *feedback* text as if it were
+ *  the span's original tooltip — which is what leaves "Copied" stuck on it. */
+let copyFlash = null;
+
+/** Take the current flash off, putting the span's own tooltip back. */
+function endCopyFlash() {
+  if (!copyFlash) return;
+  clearTimeout(copyFlash.timer);
+  copyFlash.el.classList.remove('copied', 'copy-failed');
+  if (copyFlash.hint !== null) copyFlash.el.setAttribute('title', copyFlash.hint);
+  copyFlash = null;
+}
+
 /** Flash the outcome on the span itself (no modal, no toast). The class drives
  *  a CSS ::after label, and the title carries it for screen readers. */
 function flashCopied(el, ok) {
+  endCopyFlash();
   const hint = el.getAttribute('title');
-  el.classList.remove('copied', 'copy-failed');
   void el.offsetWidth; // restart the animation on a repeated click
   el.classList.add(ok ? 'copied' : 'copy-failed');
   el.setAttribute('title', ok ? 'Copied' : 'Copy failed — select and press Ctrl+C');
-  setTimeout(() => {
-    el.classList.remove('copied', 'copy-failed');
-    if (hint !== null) el.setAttribute('title', hint);
-  }, COPY_FEEDBACK_MS);
+  copyFlash = { el: el, hint: hint, timer: setTimeout(endCopyFlash, COPY_FEEDBACK_MS) };
 }
 
 document.addEventListener('click', (e) => {
@@ -1184,6 +1198,7 @@ function storedRev(key) {
  *  this tab deliberately takes the key over (New, Open, Save As, a fork): the
  *  point of those is to become the project, not to merge with it. */
 function rebaseRev() {
+  pendingRemote = null; // it belongs to the key we are leaving behind
   if (!storageOk) return;
   docRev = storedRev(activeStorageKey()) || 0;
   docDirty = false;
@@ -1227,6 +1242,7 @@ function adoptRemote(parsed) {
     doc = normalizeLoadedDoc(parsed); // also picks up the incoming revision
     currentId = nodeAtIndexPath(doc.root, caretPath).id;
     docDirty = false;
+    clearTimeout(saveTimer); // our copy IS the stored one now: nothing to write
     render();
   } finally {
     adopting = false;
@@ -1256,11 +1272,14 @@ window.addEventListener('storage', (e) => {
   adoptRemote(parsed);
 });
 
-/** Adopt a deferred remote version once the note editor is out of the way. */
-function flushPendingRemote() {
+/** Adopt a deferred remote version once the note editor is out of the way.
+ *  `dirty` is the divergence of THIS tab as it stood before the caller's
+ *  render() — that render schedules a save and so marks the document dirty
+ *  whatever happened, which would otherwise refuse every deferred version. */
+function flushPendingRemote(dirty) {
   const parsed = pendingRemote;
   pendingRemote = null;
-  if (parsed && !docDirty && conflictKey === null) adoptRemote(parsed);
+  if (parsed && !dirty && conflictKey === null) adoptRemote(parsed);
 }
 
 /** Parse a stored document, returning null rather than throwing. */
@@ -1275,8 +1294,9 @@ function safeParseDoc(raw) {
 
 /* ---- The conflict dialog ---- */
 
-// Only the recommended answer is a submit button, so Enter cannot discard this
-// tab's work by accident (the same pattern as the name dialog's Cancel).
+// Only the recommended answer is a submit button, and it carries `autofocus` —
+// showModal() would otherwise focus the FIRST button, and Enter would discard
+// this tab's version instead of keeping it.
 document
   .getElementById('conflict-theirs')
   .addEventListener('click', () => conflictDialog.close('theirs'));
@@ -1288,6 +1308,9 @@ function openConflictDialog(key) {
   clearTimeout(saveTimer); // no save fires while the question is on screen
   setStatus('conflict');
   conflictNameEl.textContent = currentFileName || 'untitled';
+  // Esc closes a dialog WITHOUT touching returnValue, so a stale answer from a
+  // previous conflict would be replayed as if it had just been clicked.
+  conflictDialog.returnValue = '';
   conflictDialog.showModal();
 }
 
@@ -1323,6 +1346,7 @@ function keepMineAsCopy() {
   delete doc.isShared;
   docRev = 0; // a key of its own, so nobody else's revision applies
   docDirty = true;
+  pendingRemote = null; // it is a version of the project we just walked away from
   if (persistProject()) {
     updateFileLabel(); // also moves the address onto the copy
     setStatus('saved as "' + name + '"');
@@ -1428,6 +1452,8 @@ document
 function askName(def) {
   return new Promise((resolve) => {
     nameInput.value = def || '';
+    nameDialog.returnValue = ''; // Esc leaves returnValue alone — see the
+                                 // conflict dialog for the same trap
     const onClose = () => {
       nameDialog.removeEventListener('close', onClose);
       resolve(nameDialog.returnValue === 'ok' ? nameInput.value : null);
@@ -2053,6 +2079,10 @@ function bootLocal() {
       // re-seeds each visit until the user picks New/Open or names it via Save As.
       doc = starterDocument();
       currentId = doc.rootId;
+    } else {
+      // The remembered project is gone, so we keep the blank document made at
+      // start-up, under the "untitled" key — which another tab may already own.
+      rebaseRev();
     }
   } else {
     // No persistence (e.g. file://): every load is fresh, so greet with the map.

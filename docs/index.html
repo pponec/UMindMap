@@ -108,7 +108,9 @@
       <menu class="note-actions">
         <span class="note-hint">Esc: decide later</span>
         <button type="button" id="conflict-theirs" class="secondary">Load the other version</button>
-        <button value="copy" class="primary">Save mine as a copy</button>
+        <!-- autofocus: without it showModal() focuses the FIRST button, and
+             Enter would then drop this tab's version instead of keeping it. -->
+        <button value="copy" class="primary" autofocus>Save mine as a copy</button>
       </menu>
     </form>
   </dialog>
