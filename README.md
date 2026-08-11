@@ -218,13 +218,14 @@ A quick way to see what the picture engine handles:
 
 | Map | Shows |
 |---|---|
-| [`?demo.json`](https://pponec.github.io/UMindMap/?demo.json) | a short intro to the sharing feature |
-| [`?demo-trip.json`](https://pponec.github.io/UMindMap/?demo-trip.json) | the map pictured at the top of this page |
-| [`?demo-note-sizes.json`](https://pponec.github.io/UMindMap/?demo-note-sizes.json) | descriptions from one line to very long |
-| [`?demo-deep-nesting.json`](https://pponec.github.io/UMindMap/?demo-deep-nesting.json) | five levels of structure |
-| [`?demo-tree-shapes.json`](https://pponec.github.io/UMindMap/?demo-tree-shapes.json) | branches of wildly different shape |
-| [`?demo-notes-everywhere.json`](https://pponec.github.io/UMindMap/?demo-notes-everywhere.json) | a description on every single node |
-| [`?demo-markdown-notes.json`](https://pponec.github.io/UMindMap/?demo-markdown-notes.json) | tables, code, quotes, escaping |
+| [`demo.json`](https://pponec.github.io/UMindMap/?demo.json) | a short intro to the sharing feature |
+| [`demo-trip.json`](https://pponec.github.io/UMindMap/?demo-trip.json) | the map pictured at the top of this page |
+| [`demo-note-sizes.json`](https://pponec.github.io/UMindMap/?demo-note-sizes.json) | descriptions from one line to very long |
+| [`demo-deep-nesting.json`](https://pponec.github.io/UMindMap/?demo-deep-nesting.json) | five levels of structure |
+| [`demo-tree-shapes.json`](https://pponec.github.io/UMindMap/?demo-tree-shapes.json) | branches of wildly different shape |
+| [`demo-notes-everywhere.json`](https://pponec.github.io/UMindMap/?demo-notes-everywhere.json) | a description on every single node |
+| [`demo-markdown-notes.json`](https://pponec.github.io/UMindMap/?demo-markdown-notes.json) | tables, code, quotes, escaping |
+| [`demo-label-wrapping.json`](https://pponec.github.io/UMindMap/?demo-label-wrapping.json) | node titles from short to far too long |
 
 Publish your own the same way — drop a `.json` into `docs/data/` and open it as `?your-file.json`; the [folder README](docs/data/README.md) has the details and the naming rules.
 
