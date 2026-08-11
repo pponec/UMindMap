@@ -580,7 +580,7 @@ outlineEl.addEventListener('input', (e) => {
   if (node) node.text = text;
   currentId = id;
   // Keep the detail panel's heading in sync while the title is edited.
-  detailTitleEl.textContent = text.trim();
+  setDetailTitle(text);
   scheduleSave();
 });
 
@@ -671,10 +671,12 @@ function enterNoteEdit(id) {
   editingNoteId = id;
   currentId = id;
   cancelRequested = false;
-  detailTitleEl.textContent = node.text.trim() || '(untitled node)';
   detailBodyEl.hidden = true;
   detailEditBtn.hidden = true;
   detailEditor.hidden = false;
+  // After the button is hidden: the heading then has the whole row to itself,
+  // and setDetailTitle measures the room it really has.
+  setDetailTitle(node.text, '(untitled node)');
   // On mobile the .editing class grows the sheet (85vh) so the textarea and
   // keyboard have room; on desktop it is inert.
   detailEl.classList.add('editing');
@@ -771,13 +773,44 @@ function isMobileSheet() { return mobileSheetQuery.matches; }
 
 let lastDetailId = null; // last node shown, so we only collapse on real moves
 
+/**
+ * Put a node's text in the detail panel's heading, cut to its **first line**
+ * when it does not fit on one (labelFirstLine, from svg-export.js — the same
+ * wrapper the picture uses, so the cut falls at a space and never leaves a
+ * one-character word behind, which a CSS ellipsis cannot manage). The panel is
+ * there for the description; a node text of several hundred characters would
+ * otherwise push the description itself off the screen — worst of all while
+ * editing it. The full text stays available as the heading's tooltip.
+ *
+ * The width is taken from the head row rather than from the heading itself:
+ * the heading is a flex item, so its own width is whatever the *previous*
+ * (possibly much shorter) title made it.
+ */
+function setDetailTitle(text, fallback) {
+  const full = (text || '').trim();
+  let shown = full;
+  if (full && window.labelFirstLine) {
+    const head = detailTitleEl.parentElement;
+    const gap = 10;                       // .detail-head's own gap
+    const button = detailEditBtn.hidden ? 0 : detailEditBtn.offsetWidth + gap;
+    const style = getComputedStyle(detailTitleEl);
+    shown = window.labelFirstLine(full, {
+      maxWidth: head.clientWidth - button, // 0 while the panel is hidden, and
+                                           // then the default width applies
+      font: style.fontWeight + ' ' + style.fontSize + ' ' + style.fontFamily,
+    });
+  }
+  detailTitleEl.textContent = shown || fallback || '';
+  detailTitleEl.title = shown === full ? '' : full;
+}
+
 /** Refresh the detail panel for the focused node's description. */
 function updateDetail() {
   // While the inline editor is open, never overwrite it (a stray render would
   // otherwise wipe the in-progress textarea).
   if (editingNoteId !== null) return;
   const node = nodeById(currentId) || doc.root;
-  detailTitleEl.textContent = (node.text || '').trim();
+  setDetailTitle(node.text);
   const note = (node.note || '').trim();
   if (note) {
     detailBodyEl.innerHTML = renderMarkdown(note);

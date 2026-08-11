@@ -1,0 +1,210 @@
+{
+  "meta": {
+    "app": "UMindMap",
+    "version": "1.0.3",
+    "home": "https://github.com/pponec/UMindMap",
+    "project": "demo-label-wrapping",
+    "exported": "2026-08-11 10:00"
+  },
+  "root": {
+    "text": "Long labels and empty nodes",
+    "note": "Two rules of the picture, in one map:\n\n1. a label too long for one line is **wrapped** — at spaces, balanced, at most five lines, and only then cut with `…`;\n2. a node with **no label, no description and no children** is left out of the drawing altogether.\n\nNothing here should overlap, and no empty box should be visible.",
+    "collapsed": false,
+    "children": [
+      {
+        "text": "Label lengths",
+        "note": "Each leaf below is a little longer than the one above it. A wrapped label makes its box taller, never wider than the maximum, and the lines are balanced — a two-line label must not come out as one full line plus a single trailing word.",
+        "collapsed": false,
+        "children": [
+          {
+            "text": "A short label",
+            "note": "",
+            "collapsed": false,
+            "children": []
+          },
+          {
+            "text": "A label that still fits on one single line of its box",
+            "note": "",
+            "collapsed": false,
+            "children": []
+          },
+          {
+            "text": "A label just long enough that it has to be wrapped onto a second line of its own box",
+            "note": "",
+            "collapsed": false,
+            "children": []
+          },
+          {
+            "text": "A considerably longer label that needs three separate lines before the whole of it fits into the box, which is still well short of the limit",
+            "note": "",
+            "collapsed": false,
+            "children": []
+          },
+          {
+            "text": "A label that goes on for long enough to fill every one of the five lines a single label is ever allowed to take, which is as far as the wrapping will go before it decides that the rest of the sentence has to be dropped, and it is therefore the one to look at whenever that limit is what has been changed",
+            "note": "",
+            "collapsed": false,
+            "children": []
+          },
+          {
+            "text": "A label so absurdly long that even five full lines cannot hold it, which is the point at which the wrapping gives up and the remainder of the sentence is dropped and replaced with a single ellipsis, because one runaway label must never be allowed to blow up the geometry of the entire drawing the way it would if it were simply allowed to keep going and going with nothing at all to stop it",
+            "note": "The ellipsis is the last resort, not the normal case: everything shorter than this is wrapped in full.",
+            "collapsed": false,
+            "children": []
+          }
+        ]
+      },
+      {
+        "text": "Nothing to break at",
+        "note": "A single word wider than the box has no space to wrap at, so it is broken mid-word — the only case where that is allowed.",
+        "collapsed": false,
+        "children": [
+          {
+            "text": "https://pponec.github.io/UMindMap/?demo-label-wrapping.json&this=is=a=deliberately=unbreakable=address",
+            "note": "",
+            "collapsed": false,
+            "children": []
+          },
+          {
+            "text": "Pneumonoultramicroscopicsilicovolcanoconiosisantidisestablishmentarianism",
+            "note": "",
+            "collapsed": false,
+            "children": []
+          },
+          {
+            "text": "A wrapped label on a parent node that also carries a description of its own",
+            "note": "The bubble hangs below the **taller** box, not through it — the layout takes the wrapped height into account, so the leader line and the note both start under the last line of the label.",
+            "collapsed": false,
+            "children": [
+              {
+                "text": "First child",
+                "note": "",
+                "collapsed": false,
+                "children": []
+              },
+              {
+                "text": "Second child, with a label long enough to wrap as well",
+                "note": "",
+                "collapsed": false,
+                "children": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "text": "One-character words",
+        "note": "A word of a single character — `a` and `I`, but a lone digit just as much — must never be left at the **end** of a line. The wrapper glues such a word to the word after it, so it travels to the start of the next line instead.",
+        "collapsed": false,
+        "children": [
+          {
+            "text": "This label is long enough that it has to be wrapped, and not one of the single letters in it may be left hanging at the end of a line",
+            "note": "",
+            "collapsed": false,
+            "children": []
+          },
+          {
+            "text": "Digits count as words too, so chapter 5 and section 9 and appendix 3 are each glued to whatever word happens to follow them",
+            "note": "",
+            "collapsed": false,
+            "children": []
+          },
+          {
+            "text": "An English label with a lone a and a lone I in it, both of which have to move down to the next line rather than dangle at the end of one",
+            "note": "",
+            "collapsed": false,
+            "children": []
+          },
+          {
+            "text": "A label whose very last word is the single letter a",
+            "note": "A one-letter word at the very end has nothing to glue to and simply stays where it is.",
+            "collapsed": false,
+            "children": []
+          }
+        ]
+      },
+      {
+        "text": "Empty nodes",
+        "note": "This branch has **seven** children in the outline and exactly **four** of them may appear in the picture: the two ordinary leaves, the one that has only a description, and the label-less node that has children of its own. The empty leaves and the wholly empty subtree are gone.",
+        "collapsed": false,
+        "children": [
+          {
+            "text": "",
+            "note": "",
+            "collapsed": false,
+            "children": []
+          },
+          {
+            "text": "   ",
+            "note": "  \n\t ",
+            "collapsed": false,
+            "children": []
+          },
+          {
+            "text": "An ordinary leaf, which of course stays",
+            "note": "",
+            "collapsed": false,
+            "children": []
+          },
+          {
+            "text": "",
+            "note": "**No label, only a description.** The node still carries something worth showing, so the picture keeps it — a narrow box with its bubble beside it.",
+            "collapsed": false,
+            "children": []
+          },
+          {
+            "text": "",
+            "note": "",
+            "collapsed": false,
+            "children": [
+              {
+                "text": "A kept child of a label-less parent",
+                "note": "",
+                "collapsed": false,
+                "children": []
+              },
+              {
+                "text": "Its sibling",
+                "note": "",
+                "collapsed": false,
+                "children": []
+              }
+            ]
+          },
+          {
+            "text": "",
+            "note": "",
+            "collapsed": false,
+            "children": [
+              {
+                "text": "",
+                "note": "",
+                "collapsed": false,
+                "children": []
+              },
+              {
+                "text": " ",
+                "note": "   ",
+                "collapsed": false,
+                "children": [
+                  {
+                    "text": "",
+                    "note": "",
+                    "collapsed": false,
+                    "children": []
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "text": "The last leaf of the branch",
+            "note": "If the whole empty subtree above me had not been pruned, there would be blank boxes between me and my siblings.",
+            "collapsed": false,
+            "children": []
+          }
+        ]
+      }
+    ]
+  }
+}

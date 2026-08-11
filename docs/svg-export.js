@@ -8,8 +8,12 @@
  *   1. Root is centred. Up to 3 branches all go right; with more, the first
  *      floor(N/2) go right and the rest go left, both in source order top to
  *      bottom (the left side is mirrored, not rotated).
- *   2. Nodes are one line with a measured width; branches are always drawn
- *      expanded (`collapsed` is view state and is ignored here).
+ *   2. A node's label is measured and, when it is too long for one line,
+ *      wrapped (see fitLabel), so the box grows downwards instead of losing its
+ *      end to an ellipsis. A node with nothing to show — no label, no note and
+ *      no children — is left out of the picture altogether (pruneEmpty).
+ *      Branches are always drawn expanded (`collapsed` is view state and is
+ *      ignored here).
  *   3. Connectors are cubic Béziers; the palette is always light so the file
  *      prints and shares well regardless of the app theme.
  *   4. A node's description is drawn as a UML-style note bubble whose *space is
@@ -36,6 +40,8 @@
  * Public API (globals, matching markdown.js style):
  *   documentToSvg(doc, opts)    -> SVG source string; opts.project names the
  *                                  project in the sheet's footer
+ *   labelFirstLine(text, opts)  -> the first wrapped line of a node label, for
+ *                                  a caller that has room for one line only
  *   whenLogoReady()             -> promise; await it before drawing at page
  *                                  load, or the footer loses its logo
  * Showing or saving that string is the app's business, not this file's.
@@ -59,9 +65,15 @@
                              // root->1 entry is unused — the root note sits in the
                              // strip below the root, not in a column gap)
   const LINK_MIN = 120;      // shortest connector: columns grow to keep this
-  const BOX_H = 34;          // node box height
-  const ROOT_H = 42;         // root box height
-  const MAX_BOX_W = 460;     // wider labels are truncated with an ellipsis
+  const BOX_H = 34;          // node box height, for a single-line label
+  const ROOT_H = 42;         // the same for the root
+  const MAX_BOX_W = 460;     // a longer label is wrapped over several lines
+  const MAX_LINES = 5;       // …and past this many lines the rest is dropped
+                             // with an ellipsis, so no single label can blow up
+                             // the whole drawing
+  const PAD_Y = 8;           // space above and below a wrapped label
+  const MIN_BOX_W = 40;      // width of a box with no label at all (it survives
+                             // pruneEmpty only for its note or its children)
   const RADIUS = 8;
 
   const NOTE_W = 246;        // note bubble width
@@ -155,10 +167,13 @@
     }
   }
 
-  /** Measure one line of text in the given font. */
+  /** Measure one line of text in the given font. A descriptor may carry a ready
+   *  CSS `font` shorthand (`css`) instead of weight/size: that is how a caller
+   *  outside the drawing — the app's detail heading — wraps text in *its* own
+   *  font rather than in the sheet's. */
   function textWidth(text, f) {
     const c = ctx();
-    c.font = `${f.weight} ${f.size}px ${FONT_STACK}`;
+    c.font = f.css || `${f.weight} ${f.size}px ${FONT_STACK}`;
     return c.measureText(text).width;
   }
 
@@ -170,17 +185,142 @@
       + (f.weight === 400 ? '' : ` font-weight="${f.weight}"`);
   }
 
-  /** Fit a label into at most MAX_BOX_W, truncating with an ellipsis.
-   *  Returns the (possibly shortened) label and the resulting box width. */
+  /** Distance between two label lines in the given font. */
+  function lineH(f) {
+    return Math.round(f.size * 1.35);
+  }
+
+  /** Height of a node's box: the base height, grown only when the label
+   *  actually wrapped — a map with no wrapped label is drawn exactly as before. */
+  function boxHeight(lines, f, depth) {
+    const base = depth === 0 ? ROOT_H : BOX_H;
+    if (lines.length <= 1) return base;
+    return Math.max(base, lines.length * lineH(f) + 2 * PAD_Y);
+  }
+
+  // A one-character word ("a", "v", "k", "I", "8"…). Czech typesetting leaves
+  // none of them at the end of a line.
+  const SOLO_RE = /^[\p{L}\p{N}]$/u;
+
+  /** Split a label into the pieces a line break may fall between: words, except
+   *  that a one-character word is glued to the word after it. Gluing is what
+   *  moves such a word to the start of the next line rather than leaving it
+   *  hanging at the end of this one; consecutive ones ("a v tom") glue as a run.
+   *  A one-character *last* word has nothing to glue to and simply stays put. */
+  function wrapChunks(label) {
+    const words = label.split(/\s+/).filter(Boolean);
+    const out = [];
+    let i = 0;
+    while (i < words.length) {
+      let chunk = words[i++];
+      while (i < words.length && SOLO_RE.test(chunk.slice(chunk.lastIndexOf(' ') + 1))) {
+        chunk += ' ' + words[i++];
+      }
+      out.push(chunk);
+    }
+    return out;
+  }
+
+  /** Break a chunk that fits on no line at all (a long word, a URL) into pieces
+   *  of at most `max`. Only ever used when there is no space to break at; every
+   *  piece is non-empty, so filling always terminates. */
+  function breakChunk(chunk, f, max) {
+    const out = [];
+    let cur = '';
+    for (const ch of chunk) {
+      if (cur && textWidth(cur + ch, f) > max) {
+        out.push(cur.trim());
+        cur = '';
+      }
+      cur += ch;
+    }
+    if (cur.trim()) out.push(cur.trim());
+    return out;
+  }
+
+  /** Greedily fill chunks into lines no wider than `max`. */
+  function fillLines(chunks, f, max) {
+    const lines = [];
+    let cur = '';
+    chunks.forEach((chunk) => {
+      if (cur && textWidth(cur + ' ' + chunk, f) <= max) {
+        cur += ' ' + chunk;
+        return;
+      }
+      if (cur) lines.push(cur);
+      if (textWidth(chunk, f) <= max) {
+        cur = chunk;
+        return;
+      }
+      const pieces = breakChunk(chunk, f, max);
+      cur = pieces.pop();
+      lines.push(...pieces);
+    });
+    if (cur) lines.push(cur);
+    return lines;
+  }
+
+  /** The narrowest width that still needs no more than `n` lines. Filling at it
+   *  balances the lines: a two-line label becomes two halves instead of one full
+   *  line plus a single trailing word. */
+  function balanceWidth(chunks, f, max, n) {
+    let lo = 0, hi = max;
+    for (let i = 0; i < 18 && hi - lo > 0.5; i++) {
+      const mid = (lo + hi) / 2;
+      if (fillLines(chunks, f, mid).length <= n) hi = mid; else lo = mid;
+    }
+    return hi;
+  }
+
+  /**
+   * Fit a label into at most MAX_BOX_W: one line while it fits, otherwise
+   * wrapped at spaces (mid-word only when a single word is wider than the box)
+   * over at most MAX_LINES lines, the last of which is truncated with an
+   * ellipsis if even that is not enough. Returns the lines and the box width.
+   */
   function fitLabel(text, f) {
-    const label = (text || '').trim() || ' ';
+    const label = (text || '').trim();
+    if (!label) return { lines: [], w: MIN_BOX_W };
     const max = MAX_BOX_W - 2 * f.padX;
     if (textWidth(label, f) <= max) {
-      return { label: label, w: Math.round(textWidth(label, f) + 2 * f.padX) };
+      return { lines: [label], w: Math.round(textWidth(label, f) + 2 * f.padX) };
     }
-    let cut = label;
-    while (cut.length > 1 && textWidth(cut + '…', f) > max) cut = cut.slice(0, -1);
-    return { label: cut + '…', w: MAX_BOX_W };
+    const chunks = wrapChunks(label);
+    let lines = fillLines(chunks, f, max);
+    if (lines.length > MAX_LINES) {
+      lines = lines.slice(0, MAX_LINES);
+      let cut = lines[MAX_LINES - 1];
+      while (cut.length > 1 && textWidth(cut + '…', f) > max) cut = cut.slice(0, -1);
+      lines[MAX_LINES - 1] = cut + '…';
+    } else {
+      lines = fillLines(chunks, f, balanceWidth(chunks, f, max, lines.length));
+    }
+    const w = lines.reduce((m, l) => Math.max(m, textWidth(l, f)), 0);
+    return { lines: lines, w: Math.min(MAX_BOX_W, Math.round(w + 2 * f.padX)) };
+  }
+
+  /**
+   * The first line this wrapper would produce for `text`, with an ellipsis when
+   * there is more — the one-line form of a node's label. The app titles its
+   * detail panel with it: that panel is there for the *description*, and a very
+   * long node text would otherwise push the description off the screen. The
+   * break falls at a space and leaves no one-character word behind, which a
+   * plain CSS ellipsis cannot do.
+   *
+   * `opts.maxWidth` is the width available for the text (default: one node box)
+   * and `opts.font` a CSS `font` shorthand to measure in (default: the sheet's
+   * own node font), so the caller can wrap in the font it will actually draw.
+   */
+  function labelFirstLine(text, opts) {
+    const label = (text || '').trim();
+    if (!label) return '';
+    const o = opts || {};
+    const node = boxFont(2);
+    const f = o.font ? { css: o.font, padX: 0 } : node;
+    const max = o.maxWidth > 0 ? o.maxWidth : MAX_BOX_W - 2 * node.padX;
+    if (textWidth(label, f) <= max) return label;
+    const lines = fillLines(wrapChunks(label), f, max);
+    return lines.length > 1 ? lines[0] + ' …' : label;
   }
 
   /* -------------------------------------------------------------------- */
@@ -319,6 +459,22 @@
     };
   }
 
+  /** Has this node anything the picture could show? An empty box with nothing
+   *  hanging off it is noise, so it is dropped — but a node still counts when it
+   *  carries a note, and a node with (kept) children is structure and stays. */
+  function worthDrawing(node) {
+    return node.text.trim() !== '' || node.note != null || node.children.length > 0;
+  }
+
+  /** Drop every node with no label, no note and no children, bottom-up, so a
+   *  whole branch of empty nodes goes with them. The root is never pruned: it is
+   *  what the drawing hangs from, and an empty one still says the map is empty.
+   *  Runs on the private layout tree, so the document itself keeps its nodes. */
+  function pruneEmpty(node) {
+    node.children.forEach(pruneEmpty);
+    node.children = node.children.filter(worthDrawing);
+  }
+
   /** Split the root's branches: up to 3 all go right, otherwise the first
    *  floor(N/2) go right and the remainder left, both kept in source order. */
   function splitBranches(children) {
@@ -369,9 +525,11 @@
   function measure(node, depth, side, widths) {
     node._depth = depth;
     node._side = side;
-    const fit = fitLabel(node.text, boxFont(depth));
-    node._label = fit.label;
+    const f = boxFont(depth);
+    const fit = fitLabel(node.text, f);
+    node._lines = fit.lines;
     node._w = fit.w;
+    node._h = boxHeight(fit.lines, f, depth);
     widths[depth] = Math.max(widths[depth] || 0, fit.w);
     node.children.forEach((k) => measure(k, depth + 1, side, widths));
   }
@@ -474,10 +632,13 @@
     const place = (node) => {
       const kids = node.children;
       if (!kids.length) {
-        node._y = state.cursor + SLOT / 2;
+        // A wrapped label makes the box taller than one SLOT; the leaf then
+        // takes the room it needs, keeping the same air above and below it.
+        const slot = Math.max(SLOT, node._h + SLOT - BOX_H);
+        node._y = state.cursor + slot / 2;
         attachRects(node);
         slideDown(node, placed);
-        state.cursor = node._y + SLOT / 2;
+        state.cursor = node._y + slot / 2;
       } else {
         kids.forEach(place);
         node._y = (kids[0]._y + kids[kids.length - 1]._y) / 2;
@@ -489,7 +650,7 @@
             // beneath the whole subtree (which includes descendants' own
             // note bubbles, sitting in an entirely different column and thus
             // never a real threat to this one).
-            const defaultTop = node._y + BOX_H / 2 + LEAD;
+            const defaultTop = node._y + node._h / 2 + LEAD;
             const top = Math.max(defaultTop, clearance + NOTE_GAP);
             node._lane = top + node.note.h / 2;
           }
@@ -538,7 +699,7 @@
   function noteRect(node) {
     const h = node.note.h;
     if (node._depth === 0) {                       // root: free strip below it
-      return { x: -NOTE_W / 2, y: node._y + ROOT_H / 2 + LEAD, w: NOTE_W, h: h, kind: 'root' };
+      return { x: -NOTE_W / 2, y: node._y + node._h / 2 + LEAD, w: NOTE_W, h: h, kind: 'root' };
     }
     if (!node.children.length) {                   // leaf: outer gutter
       const x = node._side > 0
@@ -552,14 +713,13 @@
     // hangs right below the node; `_lane` is the fallback for a bubble so much
     // wider than its node that it would sit in the outgoing fan.
     const x = node._side > 0 ? node._x : node._x + node._w - NOTE_W;
-    const y = node._lane != null ? node._lane - h / 2 : node._y + BOX_H / 2 + LEAD;
+    const y = node._lane != null ? node._lane - h / 2 : node._y + node._h / 2 + LEAD;
     return { x: x, y: y, w: NOTE_W, h: h, kind: 'parent' };
   }
 
   /** Rectangle a node's box occupies. */
   function boxRect(node) {
-    const h = node._depth === 0 ? ROOT_H : BOX_H;
-    return { x: node._x, y: node._y - h / 2, w: node._w, h: h };
+    return { x: node._x, y: node._y - node._h / 2, w: node._w, h: node._h };
   }
 
   /** Do two rectangles touch? Drawn shapes keep a clearance between them; a
@@ -577,11 +737,13 @@
   function layout(root) {
     const { right, left } = splitBranches(root.children);
     const widths = [];
-    const fit = fitLabel(root.text, boxFont(0));
+    const rootFont = boxFont(0);
+    const fit = fitLabel(root.text, rootFont);
     root._depth = 0;
     root._side = 1;
-    root._label = fit.label;
+    root._lines = fit.lines;
     root._w = fit.w;
+    root._h = boxHeight(fit.lines, rootFont, 0);
     widths[0] = root._w;
     right.forEach((b) => measure(b, 1, 1, widths));
     left.forEach((b) => measure(b, 1, -1, widths));
@@ -644,9 +806,9 @@
     return Math.round(n * 10) / 10;
   }
 
-  /** Half-height of a node's box. */
+  /** Half-height of a node's box (a wrapped label makes it taller). */
   function halfH(node) {
-    return (node._depth === 0 ? ROOT_H : BOX_H) / 2;
+    return node._h / 2;
   }
 
   /** Cubic Bézier from a parent's side edge to a child's facing edge. */
@@ -672,21 +834,32 @@
     return `M${r(node._cx)},${r(node._y + halfH(node))} L${r(node._cx)},${r(rect.y)}`;
   }
 
-  /** Node box: rounded rect plus its single-line, vertically centred label. */
+  /** Node box: rounded rect plus its label, vertically centred — one <text>
+   *  whose lines are <tspan>s, each re-anchored on the same vertical.
+   *  A one-line label is centred in its box; a wrapped one is set flush left
+   *  (the box is exactly the widest line wide, so the short lines are what a
+   *  ragged right edge is made of, and centring them only looks unsettled). */
   function boxSvg(node) {
     const isRoot = node._depth === 0;
-    const h = isRoot ? ROOT_H : BOX_H;
+    const h = node._h;
     const f = boxFont(node._depth);
     const fill = isRoot ? C.rootFill : node._depth === 1 ? C.branchFill : C.leafFill;
     const stroke = isRoot ? C.rootFill : node._depth === 1 ? C.branchStroke : C.leafStroke;
     const colour = isRoot ? C.rootText : C.text;
+    const wrapped = node._lines.length > 1;
+    const lh = lineH(f);
+    const first = node._y - (node._lines.length - 1) * lh / 2;
+    const x = wrapped ? node._x + f.padX : node._cx;
+    const spans = node._lines.map((line, i) =>
+      `<tspan x="${r(x)}"${i ? ` dy="${lh}"` : ''}>${esc(line)}</tspan>`).join('');
+    const label = node._lines.length
+      ? `<text x="${r(x)}" y="${r(first)}" text-anchor="${wrapped ? 'start' : 'middle'}" ` +
+        `dominant-baseline="central" fill="${colour}" ${fontAttrs(f)}>${spans}</text>`
+      : '';
     return (
       `<g><rect x="${r(node._x)}" y="${r(node._y - h / 2)}" width="${r(node._w)}" ` +
-      `height="${h}" rx="${isRoot ? RADIUS + 2 : RADIUS}" fill="${fill}" stroke="${stroke}" ` +
-      `stroke-width="${node._depth <= 1 ? 1.5 : 1}"/>` +
-      `<text x="${r(node._cx)}" y="${r(node._y)}" text-anchor="middle" ` +
-      `dominant-baseline="central" fill="${colour}" ${fontAttrs(f)}>` +
-      `${esc(node._label)}</text></g>`
+      `height="${r(h)}" rx="${isRoot ? RADIUS + 2 : RADIUS}" fill="${fill}" stroke="${stroke}" ` +
+      `stroke-width="${node._depth <= 1 ? 1.5 : 1}"/>${label}</g>`
     );
   }
 
@@ -806,6 +979,7 @@
   function documentToSvg(doc, opts) {
     const project = (opts && opts.project) || '';
     const root = layoutTree(doc.root);
+    pruneEmpty(root);
     measureNotes(root);
     const scene = layout(root);
 
@@ -859,6 +1033,7 @@
   }
 
   global.documentToSvg = documentToSvg;
+  global.labelFirstLine = labelFirstLine;
   global.whenLogoReady = whenLogoReady;
   global.whenNotesReady = whenNotesReady;
 
