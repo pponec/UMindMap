@@ -15,13 +15,31 @@
 /* Application identity                                                   */
 /* ---------------------------------------------------------------------- */
 
-// Stamped into every exported document (see serialise). Bump APP_VERSION when
-// the released app changes; APP_HOME is the project's home page — the GitHub
-// repository, which carries the app's documentation and a link to run it live,
-// and which the toolbar wordmark links to.
+// Stamped into every exported document (see serialise). APP_HOME is the
+// project's home page — the GitHub repository, which carries the app's
+// documentation and a link to run it live, and which the toolbar wordmark
+// links to.
 const APP_NAME = 'UMindMap';
-const APP_VERSION = '1.0.3';
 const APP_HOME = 'https://github.com/pponec/UMindMap';
+
+/**
+ * The released version, read off the `?v=` query index.html loads this file
+ * with. That query exists to bust the browser cache — a document is
+ * revalidated far more readily than the files it names, and without it an
+ * upgraded app.js keeps its old URL and yesterday's code is served against
+ * today's markup. Since the number has to be in the HTML anyway, it lives
+ * there and nowhere else: repeating it in a constant here would mean two
+ * places to bump, and the day they disagreed the stale-cache problem would be
+ * back with no way to see it.
+ *
+ * Falls back to 'dev' when there is no query to read — app.js loaded by
+ * something other than the shipped index.html, which is not a release.
+ */
+const APP_VERSION = (() => {
+  const el = document.currentScript;   // the running <script>, during parsing
+  if (!el || !el.src) return 'dev';
+  return new URL(el.src, location.href).searchParams.get('v') || 'dev';
+})();
 
 /* ---------------------------------------------------------------------- */
 /* Data model                                                             */
@@ -787,8 +805,14 @@ let lastDetailId = null; // last node shown, so we only collapse on real moves
  *
  * The width is taken from the head row rather than from the heading itself:
  * the heading is a flex item, so its own width is whatever the *previous*
- * (possibly much shorter) title made it.
+ * (possibly much shorter) title made it. It is then shaved by TITLE_SLACK,
+ * because a canvas measurement and the browser's own line breaking do not
+ * agree to the pixel — a line measured as an exact fit still wraps, and the
+ * heading would quietly become two lines. `.detail-title` clamps it to one
+ * line in CSS as well, so nothing can grow the panel even if this misses.
  */
+const TITLE_SLACK = 8;                     // px of doubt in the measurement
+
 function setDetailTitle(text, fallback) {
   const full = (text || '').trim();
   let shown = full;
@@ -798,8 +822,9 @@ function setDetailTitle(text, fallback) {
     const button = detailEditBtn.hidden ? 0 : detailEditBtn.offsetWidth + gap;
     const style = getComputedStyle(detailTitleEl);
     shown = window.labelFirstLine(full, {
-      maxWidth: head.clientWidth - button, // 0 while the panel is hidden, and
-                                           // then the default width applies
+      // 0 or less while the panel is hidden, and then labelFirstLine's own
+      // default width applies.
+      maxWidth: head.clientWidth - button - TITLE_SLACK,
       font: style.fontWeight + ' ' + style.fontSize + ' ' + style.fontFamily,
     });
   }

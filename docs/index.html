@@ -5,7 +5,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>UMindMap — self-hosted mind map outliner</title>
-  <link rel="stylesheet" href="style.css">
+  <!-- ?v= is the released version; see the note by the scripts at the end. -->
+  <link rel="stylesheet" href="style.css?v=1.0.3">
 </head>
 <body>
   <header class="toolbar">
@@ -121,9 +122,16 @@
     <img src="images/umindmap-logo.png" alt="UMindMap logo, full size">
   </dialog>
 
-  <script src="markdown.js"></script>
-  <script src="svg-export.js"></script>
-  <script src="welcome.js"></script>
-  <script src="app.js"></script>
+  <!-- THE RELEASED VERSION LIVES IN THESE ?v= QUERIES AND NOWHERE ELSE.
+       They are the cache buster: this document revalidates far more readily
+       than the files it names, so without the query an upgraded app.js keeps
+       its old URL and the browser serves the previous one. app.js reads the
+       number back off its own <script> tag (APP_VERSION) — that is what ends
+       up in exported documents and in the welcome map. To release, replace
+       every ?v= below, and the stylesheet's in <head>. -->
+  <script src="markdown.js?v=1.0.3"></script>
+  <script src="svg-export.js?v=1.0.3"></script>
+  <script src="welcome.js?v=1.0.3"></script>
+  <script src="app.js?v=1.0.3"></script>
 </body>
 </html>

@@ -131,11 +131,18 @@ main {
   gap: 10px;
   margin-bottom: 12px;
 }
+/* One line, always. setDetailTitle() already cuts a long node text at a word
+   boundary (the picture's own wrapper), and this is the guarantee that the
+   heading can never grow the panel even if that measurement is a pixel out:
+   overflow:hidden also lets the flex item shrink below its content width,
+   which is what makes the ellipsis appear instead of a wider box. */
 .detail-title {
   margin: 0;
   font-size: 1.05em;
   line-height: 1.3;
-  word-break: break-word;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .detail-body.empty { color: var(--muted); }
 .detail-body .hint kbd { margin: 0 1px; }
