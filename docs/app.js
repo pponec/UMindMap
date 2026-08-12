@@ -936,6 +936,123 @@ detailGrip.addEventListener('pointerup', () => {
 });
 
 /* ---------------------------------------------------------------------- */
+/* The panel keeps the size you drag it to                                */
+/*                                                                        */
+/* On desktop the panel is resizable by its own corner (CSS `resize: both` */
+/* — no drag code here), because a 340 px slit is a poor place to write a  */
+/* Markdown description with a table or a code block in it. The size is a  */
+/* preference of the BROWSER, not of a project or a node: one key for all  */
+/* maps, applied in view and edit mode alike, so the layout never jumps    */
+/* between reading a note and editing it, and nothing resets when focus    */
+/* moves to another node.                                                  */
+/*                                                                        */
+/* Two sizes are kept apart. `panelSize` is what the user asked for and is */
+/* the only thing ever stored; what lands on the element is that size      */
+/* CLAMPED to the window. So a temporarily narrow window (or a laptop      */
+/* screen after a large monitor) shrinks the panel for as long as it lasts */
+/* without eating the preference. The clamp is why the ResizeObserver that */
+/* records a drag (a native resize fires no event of its own) ignores the  */
+/* size WE last applied: it cannot otherwise tell our clamp from the        */
+/* user's drag, and would file every clamp as the new preference. A flag    */
+/* set around the write would not do — resize-observer callbacks run after  */
+/* animation frames, so any flag cleared in one is already down by then.    */
+/* Nothing is stored either until the panel is PINNED (a corner drag has   */
+/* started, or a stored size was restored): until then the height follows  */
+/* the note, and every long description would land as a preference.        */
+/* Mobile keeps its grip (above) and ignores all of this.                  */
+/* ---------------------------------------------------------------------- */
+
+const PANEL_SIZE_KEY = 'umindmap:panel-size';
+const PANEL_MIN_W = 260, PANEL_MIN_H = 120;  // match the CSS bounds
+const PANEL_TOP = 73;                        // sticky offset + the bottom gap
+const PANEL_GRIP = 20;                       // px corner the native resizer occupies
+let panelSize = null;      // {w, h} the user dragged, or null for the CSS default
+let panelPinned = false;   // has the panel an explicit size (drag or restore)?
+let panelApplied = null;   // the last size WE wrote, so the observer can skip it
+let panelSaveTimer = null;
+
+/** Read the remembered panel size; anything unusable is ignored, not repaired. */
+function loadPanelSize() {
+  if (!storageOk) return;
+  try {
+    const raw = localStorage.getItem(PANEL_SIZE_KEY);
+    if (!raw) return;
+    const v = JSON.parse(raw);
+    const w = Number(v && v.w), h = Number(v && v.h);
+    if (Number.isFinite(w) && Number.isFinite(h) && w >= PANEL_MIN_W && h >= PANEL_MIN_H) {
+      panelSize = { w: Math.round(w), h: Math.round(h) };
+      panelPinned = true;
+    }
+  } catch (e) {
+    console.warn('panel size load failed:', e);
+  }
+}
+
+/** Put the remembered size on the panel, clamped to the window as it is now.
+ *  On the mobile sheet the inline styles are dropped so the grip rules again. */
+function applyPanelSize() {
+  if (isMobileSheet() || !panelSize) {
+    detailEl.style.width = '';
+    detailEl.style.height = '';
+    panelApplied = null;
+    return;
+  }
+  const maxW = Math.max(PANEL_MIN_W, Math.round(window.innerWidth * 0.7));
+  const maxH = Math.max(PANEL_MIN_H, window.innerHeight - PANEL_TOP);
+  panelApplied = {
+    w: Math.min(panelSize.w, maxW),
+    h: Math.min(panelSize.h, maxH),
+  };
+  detailEl.style.width = panelApplied.w + 'px';
+  detailEl.style.height = panelApplied.h + 'px';
+}
+
+/** Remember the size the user just dragged (debounced: a drag is a stream). */
+function savePanelSize(w, h) {
+  panelSize = { w: Math.round(w), h: Math.round(h) };
+  panelApplied = panelSize;  // the element already carries it (box-sizing: border-box)
+  if (!storageOk) return;
+  clearTimeout(panelSaveTimer);
+  panelSaveTimer = setTimeout(() => {
+    try {
+      localStorage.setItem(PANEL_SIZE_KEY, JSON.stringify(panelSize));
+    } catch (e) {
+      console.warn('panel size save failed:', e);
+    }
+  }, 200);
+}
+
+// A drag that starts in the corner is the user reaching for the resizer, and
+// from then on the panel's size is theirs. The observer does the recording:
+// the native resize emits no event of its own, and the browser may swallow the
+// pointer stream while it drags.
+detailEl.addEventListener('pointerdown', (e) => {
+  if (isMobileSheet()) return;
+  const r = detailEl.getBoundingClientRect();
+  if (e.clientX >= r.right - PANEL_GRIP && e.clientY >= r.bottom - PANEL_GRIP) {
+    panelPinned = true;
+  }
+});
+
+if (window.ResizeObserver) {
+  new ResizeObserver(() => {
+    if (isMobileSheet() || !panelPinned) return;
+    const w = detailEl.offsetWidth, h = detailEl.offsetHeight;
+    if (panelApplied && panelApplied.w === w && panelApplied.h === h) return;
+    savePanelSize(w, h);
+  }).observe(detailEl);
+}
+
+// Crossing the mobile breakpoint, and a window resize, both mean the clamp has
+// to be redone from the stored preference (never from the clamped result).
+mobileSheetQuery.addEventListener('change', applyPanelSize);
+let panelClampTimer = null;
+window.addEventListener('resize', () => {
+  clearTimeout(panelClampTimer);
+  panelClampTimer = setTimeout(applyPanelSize, 120);
+});
+
+/* ---------------------------------------------------------------------- */
 /* Click-to-copy for inline `code` spans                                  */
 /*                                                                        */
 /* markdown.js marks every inline code span with MD_COPY_CLASS; a single  */
@@ -2006,6 +2123,14 @@ logoDialog.addEventListener('click', () => logoDialog.close());
 // Boot: restore the last-open project from localStorage (if any), else seed the
 // welcome map for first-time visitors, then render.
 storageOk = storageAvailable();
+
+// The detail panel opens at the size it was last dragged to (desktop only).
+// The re-apply on `load` is for a first layout that settles after this script
+// runs (a page still finding its width, e.g. inside a freshly created frame):
+// the clamp would otherwise be measured against a viewport that never was.
+loadPanelSize();
+applyPanelSize();
+window.addEventListener('load', applyPanelSize);
 
 // URL flag: ?welcome (re)loads a fresh welcome map. It is non-destructive —
 // the welcome map is ephemeral (not persisted), so the visitor's saved

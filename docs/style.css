@@ -107,16 +107,27 @@ main {
 .outline { width: 620px; max-width: 100%; }
 
 /* ---- Detail panel (floating, pinned to the top of the viewport) ---- */
+/* The panel is resizable by its bottom-right corner (native CSS `resize`, which
+   needs the `overflow` below — no drag code of our own). The size the user
+   drags is remembered for the browser (app.js, `umindmap:panel-size`) and is
+   applied in view and edit mode alike, so nothing jumps when Edit is pressed.
+   The bounds keep the result usable: never a sliver, never wider than the
+   window, and never taller than the viewport it is pinned to. */
 .detail {
   flex: none;
   width: 340px;
   /* Height follows the content, not the (tall) column, so the sticky offset
-     has room to work and the panel stays pinned while the outline scrolls. */
+     has room to work and the panel stays pinned while the outline scrolls.
+     An explicit height set by the resize grip overrides this. */
   align-self: flex-start;
   position: sticky;
   top: 61px; /* toolbar height + a small gap so it reads as floating */
   max-height: calc(100vh - 73px);
+  min-width: 260px;
+  max-width: 70vw;
+  min-height: 120px;
   overflow: auto;
+  resize: both;
   margin: 12px 12px 0 0;
   padding: 16px 18px;
   border: 1px solid var(--border);
@@ -124,6 +135,14 @@ main {
   background: var(--toolbar-bg);
   box-shadow: 0 6px 24px rgba(0, 0, 0, 0.12);
 }
+/* With an explicit height the panel is a column: the head keeps its size and
+   the editor takes all the room the drag gave it (min-height:0 is what lets a
+   flex item shrink below its content and scroll instead of overflowing). */
+.detail.editing {
+  display: flex;
+  flex-direction: column;
+}
+.detail.editing .detail-head { flex: none; }
 .detail-head {
   display: flex;
   align-items: baseline;
@@ -217,12 +236,17 @@ main {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  flex: 1 1 auto;
+  min-height: 0;
 }
 /* An author `display` beats the UA `[hidden]{display:none}`, so restore it. */
 .detail-editor[hidden] { display: none; }
 #detail-note-text {
   width: 100%;
   min-height: 140px;
+  /* Fill whatever height the panel was dragged to; the panel's own corner grip
+     is the one place a size is set, so the textarea has no second one. */
+  flex: 1 1 auto;
   font-family: inherit;
   font-size: 14px;
   line-height: 1.5;
@@ -231,7 +255,7 @@ main {
   background: var(--bg);
   color: var(--fg);
   padding: 10px;
-  resize: vertical;
+  resize: none;
   box-sizing: border-box;
 }
 .detail-editor .note-actions button.secondary { background: var(--bg); }
@@ -263,6 +287,12 @@ main {
     margin: 0;
     height: auto;               /* fit the content... */
     max-height: 50vh;           /* ...up to half the screen, then scroll */
+    /* Clear the desktop bounds: the sheet spans the screen width and is sized
+       by its grip, so a stored desktop size must not constrain it. */
+    min-width: 0;
+    max-width: none;
+    min-height: 0;
+    resize: none;               /* the grip owns the height here */
     overflow-y: auto;
     border: 1px solid var(--border);
     border-radius: 12px;

@@ -39,6 +39,8 @@ Drop a branch on the *middle* of another node to make it the last child of that 
 
 A description is Markdown, and anything you put in `backticks` is copied to the clipboard by a single click on it — handy for the commands and paths a map tends to collect.
 
+The description panel is yours to size: drag its bottom-right corner wider and taller, and it stays that way — for every node, every map, and the next time you open the app.
+
 ### 🖼 Present — one click to a picture
 
 **Show graph** transforms the outline into a graphical mind map: the root in the middle, branches fanning left and right, curved connectors, and every description drawn as a note beside the node it belongs to — **rendered Markdown**, with lists, tables, code and links intact.
