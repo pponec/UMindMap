@@ -193,21 +193,46 @@ main {
   background: var(--bg);
   border: 1px solid var(--border);
 }
-/* An inline `code` span copies itself to the clipboard on a single click
-   (marked by markdown.js, handled by app.js). A code block is left alone —
-   only the backtick spans are click-to-copy. */
-.markdown code.copy-code {
+/* A fenced (```) or indented code block is one text block: it keeps its own
+   line breaks, and a line too long for the panel wraps (as it does in the
+   graph's note bubbles) rather than pushing the panel sideways. The inner
+   <code> drops the inline span's own frame — the <pre> is the frame. */
+.markdown pre {
+  margin: 0.6em 0;
+  padding: 8px 10px;
+  border-radius: 6px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.markdown pre code {
+  display: block;
+  padding: 0;
+  border: 0;
+  background: none;
+}
+
+/* Both an inline `code` span and a whole code block copy themselves to the
+   clipboard on a single click (marked by markdown.js, handled by app.js). */
+.markdown code.copy-code,
+.markdown pre.copy-code {
   position: relative;
   cursor: pointer;
   transition: background-color 0.15s, border-color 0.15s;
 }
-.markdown code.copy-code:hover { border-color: var(--accent); }
-.markdown code.copy-code.copied { border-color: var(--accent); background: var(--focus-bg); }
-.markdown code.copy-code.copy-failed { border-color: #d1242f; }
+.markdown code.copy-code:hover,
+.markdown pre.copy-code:hover { border-color: var(--accent); }
+.markdown code.copy-code.copied,
+.markdown pre.copy-code.copied { border-color: var(--accent); background: var(--focus-bg); }
+.markdown code.copy-code.copy-failed,
+.markdown pre.copy-code.copy-failed { border-color: #d1242f; }
 /* The outcome as a small floating label above the span, so nothing in the
    note reflows while it shows. */
 .markdown code.copy-code.copied::after,
-.markdown code.copy-code.copy-failed::after {
+.markdown code.copy-code.copy-failed::after,
+.markdown pre.copy-code.copied::after,
+.markdown pre.copy-code.copy-failed::after {
   position: absolute;
   left: 50%;
   bottom: calc(100% + 4px);
@@ -221,8 +246,20 @@ main {
   pointer-events: none;
   color: #ffffff;
 }
-.markdown code.copy-code.copied::after { content: "Copied"; background: var(--accent); }
-.markdown code.copy-code.copy-failed::after { content: "Ctrl+C"; background: #d1242f; }
+.markdown code.copy-code.copied::after,
+.markdown pre.copy-code.copied::after { content: "Copied"; background: var(--accent); }
+.markdown code.copy-code.copy-failed::after,
+.markdown pre.copy-code.copy-failed::after { content: "Ctrl+C"; background: #d1242f; }
+/* A block is tall, so its label sits in the block's own top-right corner
+   instead of floating above the whole thing. */
+.markdown pre.copy-code.copied::after,
+.markdown pre.copy-code.copy-failed::after {
+  left: auto;
+  right: 6px;
+  bottom: auto;
+  top: 6px;
+  transform: none;
+}
 
 .markdown blockquote {
   margin: 0.6em 0;

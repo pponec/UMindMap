@@ -1053,17 +1053,19 @@ window.addEventListener('resize', () => {
 });
 
 /* ---------------------------------------------------------------------- */
-/* Click-to-copy for inline `code` spans                                  */
+/* Click-to-copy for `code` spans and code blocks                         */
 /*                                                                        */
-/* markdown.js marks every inline code span with MD_COPY_CLASS; a single  */
-/* delegated listener on the document turns one click on such a span into */
-/* a clipboard copy. Delegation (rather than a handler per element) is    */
-/* what makes it work everywhere the renderer's output lands: the detail  */
-/* panel (assigned via innerHTML, so no live handlers survive) and the    */
-/* note bubbles of the inlined graph view alike.                          */
+/* markdown.js marks every inline code span and every code block's <pre>  */
+/* with MD_COPY_CLASS; a single delegated listener on the document turns  */
+/* one click on either into a clipboard copy — the span's text, or the    */
+/* block's whole multi-line text (the fence's language is not part of it, */
+/* the renderer drops it). Delegation (rather than a handler per element) */
+/* is what makes it work everywhere the renderer's output lands: the      */
+/* detail panel (assigned via innerHTML, so no live handlers survive) and */
+/* the note bubbles of the inlined graph view alike.                      */
 /* ---------------------------------------------------------------------- */
 
-/** How long the "Copied" feedback stays on the clicked span. */
+/** How long the "Copied" feedback stays on the clicked span or block. */
 const COPY_FEEDBACK_MS = 1200;
 
 /** Copy text to the clipboard; async-clipboard first, execCommand fallback
@@ -1113,9 +1115,11 @@ function flashCopied(el, ok) {
 }
 
 document.addEventListener('click', (e) => {
-  const el = e.target.closest && e.target.closest('code.' + MD_COPY_CLASS);
+  // Both a <code> span and a code block's <pre> carry the marker; closest()
+  // therefore also catches a click on the <code> inside such a block.
+  const el = e.target.closest && e.target.closest('.' + MD_COPY_CLASS);
   if (!el) return;
-  // A drag that selected text inside the span means "select", not "copy".
+  // A drag that selected text inside it means "select", not "copy".
   const sel = window.getSelection();
   if (sel && !sel.isCollapsed && sel.toString().trim() !== '') return;
   copyText(el.textContent).then((ok) => flashCopied(el, ok));

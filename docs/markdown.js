@@ -15,9 +15,12 @@
  * GFM tables and paragraphs (a trailing "\" forces a <br>). Supported inline:
  * `code`, **bold**, _italic_, [text](url) links and ![alt](src) images.
  *
- * An inline code span is marked with the class COPY_CLASS ("copy-code") and a
- * hint in its title, so the host page can offer click-to-copy on it (app.js
- * does; the marker is inert wherever nobody listens, e.g. a downloaded SVG).
+ * An inline code span and a code block (the <pre>, fenced or indented) are both
+ * marked with the class COPY_CLASS ("copy-code") and a hint in their title, so
+ * the host page can offer click-to-copy on them (app.js does; the marker is
+ * inert wherever nobody listens, e.g. a downloaded SVG). A block copies its
+ * whole multi-line text; the fence's info string (the language) is not part of
+ * the content and never reaches the output.
  *
  * Intentionally omitted (as in the Java version): nested lists, setext
  * headings, reference links, HTML pass-through, footnotes, task lists and
@@ -47,9 +50,10 @@
   /** The break marker inserted between paragraph lines joined with a hard "\". */
   const BREAK = '\n';
 
-  /** Marker class + tooltip put on every inline code span (see the header). */
+  /** Marker class + tooltip put on every code span and code block (see the header). */
   const COPY_CLASS = 'copy-code';
   const COPY_HINT = 'Click to copy';
+  const COPY_HINT_BLOCK = 'Click to copy the whole block';
 
   // --- DOM helpers ------------------------------------------------------
 
@@ -220,9 +224,14 @@
     }
   }
 
-  /** Emit a <pre><code> block preserving raw line breaks (escaped by the DOM). */
+  /** Emit a <pre><code> block preserving raw line breaks (escaped by the DOM).
+   *  The marker goes on the <pre>, so a click anywhere in the block — its
+   *  padding included — copies the whole text, blank trailing lines and all. */
   function writeCodeBlock(parent, content) {
-    add(add(parent, 'pre'), 'code').textContent = content;
+    const pre = add(parent, 'pre');
+    pre.setAttribute('class', COPY_CLASS);
+    pre.setAttribute('title', COPY_HINT_BLOCK);
+    add(pre, 'code').textContent = content;
   }
 
   /** Tokenize one inline segment into text, code, image, link, bold and italic nodes. */
