@@ -73,8 +73,16 @@
           '- > block quotes\n' +
           '- [links](https://ujorm.org) and images\n' +
           '- tables and fenced code blocks\n\n' +
-          '```\ncode block: escaped & preserved\n```\n\n' +
-          'One click on an `inline code` span copies it to the clipboard.',
+          '```js\n' +
+          'function greet(name) {\n' +
+          '  const text = "Hello, " + name;   // escaped & preserved\n' +
+          '  return text;\n' +
+          '}\n' +
+          '```\n\n' +
+          'One click on an `inline code` span copies it to the clipboard — ' +
+          'and one click anywhere in the block above copies all of it, ' +
+          'line breaks and indentation included. The `js` after the opening ' +
+          'fence only names the language: it is neither shown nor copied.',
         children: [
           {
             text: 'Nodes with a description show a 🗒 — click it to open',
