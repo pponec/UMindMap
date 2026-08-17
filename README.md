@@ -46,6 +46,7 @@ The description panel is yours to size: drag its bottom-right corner wider and t
 **Show graph** transforms the outline into a graphical mind map: the root in the middle, branches fanning left and right, curved connectors, and every description drawn as a note beside the node it belongs to — **rendered Markdown**, with lists, tables, code and links intact.
 
 - The layout is computed for you, and packs itself so a long note never pushes the rest of the map down.
+- A very long description is drawn to fifteen lines and fades out under a `…`, so no single note can dwarf the map. Only the *drawing* is shortened: in the graph view a click on a shortened code block still copies the whole script. A picture is scaled down to fit rather than cut.
 - Always light, whatever your theme, so it prints and shares well.
 - The picture signs itself: logo, project name and export date in the corner.
 - **Download SVG** saves it; text stays text, so it scales to any size.

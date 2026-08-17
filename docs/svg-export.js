@@ -37,6 +37,13 @@
  * so the reserved height is exact. Trade-off: <foreignObject> renders in
  * browsers but not in Inkscape/librsvg or when rasterising to PNG.
  *
+ * A body is capped at NOTE_MAX_LINES lines, because one long note (a script,
+ * say) otherwise dwarfs the map it belongs to. The end is *hidden, not thrown
+ * away*: the text is all still in the element, so a click on a code block in
+ * the graph view copies the whole script, shortened bubble or not (app.js does
+ * the copying). A picture is the exception — it is scaled down to fit rather
+ * than clipped, since the top edge of a photo tells the reader nothing.
+ *
  * Public API (globals, matching markdown.js style):
  *   documentToSvg(doc, opts)    -> SVG source string; opts.project names the
  *                                  project in the sheet's footer
@@ -81,6 +88,21 @@
   const NOTE_SLACK = 6;      // spare height, in case the viewer's fonts differ
                              // slightly from ours: foreignObject clips, and a
                              // bubble one line too short would lose that line
+  // The note body is set in these two numbers (NOTE_CSS is written from them),
+  // so the budget below really is measured in the lines it caps. A body needing
+  // more than NOTE_MAX_LINES of them is *clipped, not shortened*: the text
+  // stays in the element in full, so a click still copies the whole of it (see
+  // app.js), and only the picture is spared a bubble taller than the map.
+  const NOTE_FONT = 11.5;
+  const NOTE_LEADING = 1.45;
+  const NOTE_MAX_LINES = 15;
+  const NOTE_MAX_H = Math.round(NOTE_MAX_LINES * NOTE_FONT * NOTE_LEADING);
+  const NOTE_PAD_X = 12;     // side padding of a bubble (mirrored in NOTE_CSS)…
+  const NOTE_INNER_W = NOTE_W - 2 * NOTE_PAD_X;  // …so this is a picture's room
+  const CLIP_SLOP = 4;       // an overflow this small is a stray descender or a
+                             // rounded line height, not a lost line: below it
+                             // nothing is marked as clipped
+  const FADE_H = 26;         // fade + ellipsis marking a clipped body
   const LEAD = 30;           // leader-line length from node to bubble
   const NOTE_GAP = 10;       // clearance a bubble keeps from anything else
   const FAN_SLICES = 6;      // pieces a connector is reserved in (see fanRects)
@@ -112,15 +134,20 @@
   };
 
   const NOTE_CSS = `
-.umnote { box-sizing: border-box; width: 100%; padding: 8px 12px 10px;
-  font: 400 11.5px/1.45 ${FONT_STACK}; color: #3d3a2f;
+.umnote { box-sizing: border-box; width: 100%; padding: 8px ${NOTE_PAD_X}px 10px;
+  font: 400 ${NOTE_FONT}px/${NOTE_LEADING} ${FONT_STACK}; color: #3d3a2f;
   display: flow-root;          /* contain child margins without clipping them */
   overflow-wrap: break-word; } /* a long word wraps instead of sticking out */
 .umnote .h { display: block; font: 700 9.5px/1.4 ${FONT_STACK};
   letter-spacing: .09em; color: #a07c00; margin: 0 0 4px; }
+/* The body of the note. Its height is capped at NOTE_MAX_LINES lines and the
+   rest is hidden rather than removed: the picture keeps its proportions, while
+   the text under the clip is still there to be copied (buildNote reports the
+   clip, and the sheet then fades the last line out and marks it with a "…"). */
+.umnote .b { max-height: ${NOTE_MAX_H}px; overflow: hidden; }
 .umnote p, .umnote ul, .umnote ol, .umnote pre, .umnote blockquote,
 .umnote table { margin: 0 0 5px; }
-.umnote > :last-child { margin-bottom: 0; }
+.umnote .b > :last-child { margin-bottom: 0; }
 .umnote h1, .umnote h2, .umnote h3, .umnote h4, .umnote h5, .umnote h6 {
   font-size: 12px; margin: 0 0 4px; }
 .umnote ul, .umnote ol { padding-left: 16px; }
@@ -394,32 +421,38 @@
     head.textContent = '🗒 NOTE';
     box.appendChild(head);
     const body = document.createElement('div');
+    body.className = 'b';        // the capped box (see NOTE_CSS)
     global.renderMarkdownInto(body, markdown);
     body.querySelectorAll('img[src]').forEach((el) => {
       const url = absolute(el.getAttribute('src'));
       el.setAttribute('src', url);
       // Width/height attributes give the browser the aspect ratio up front, so
-      // the box is reserved before the image decodes (see noteImgSize). With
-      // `max-width:100%;height:auto` the height still scales when the bubble is
-      // narrower than the image.
+      // the box is reserved before the image decodes (see noteImgSize) — and
+      // they carry the size the picture is *drawn* at: scaled down to fit the
+      // bubble's width and, for a tall one, the whole line budget as well. A
+      // picture is the one thing worth shrinking rather than clipping, since a
+      // clip would show its top edge only and say nothing about the rest.
       const size = noteImgSize.get(url);
-      if (size) {
-        el.setAttribute('width', size.w);
-        el.setAttribute('height', size.h);
+      if (size && size.w > 0 && size.h > 0) {
+        const scale = Math.min(1, NOTE_INNER_W / size.w, NOTE_MAX_H / size.h);
+        el.setAttribute('width', Math.round(size.w * scale));
+        el.setAttribute('height', Math.round(size.h * scale));
       }
     });
     body.querySelectorAll('a[href]').forEach((el) => {
       el.setAttribute('href', absolute(el.getAttribute('href')));
     });
-    while (body.firstChild) box.appendChild(body.firstChild);
+    box.appendChild(body);
 
     host.appendChild(box);
-    // No upper bound: a <foreignObject> clips whatever does not fit, so a
-    // capped height would silently drop the end of a long note.
+    // The body is capped, so the height is bounded — but only the *drawing* is:
+    // scrollHeight is what the note would have needed, and a body over the cap
+    // is reported as clipped so the sheet can say so (fadeSvg).
+    const clipped = body.scrollHeight > body.clientHeight + CLIP_SLOP;
     const h = Math.max(NOTE_MIN_H, Math.ceil(box.offsetHeight) + NOTE_SLACK);
     const xml = new XMLSerializer().serializeToString(box);
     host.removeChild(box);
-    return { h: h, xml: xml };
+    return { h: h, xml: xml, clipped: clipped };
   }
 
   /** Measure every note of the layout tree, replacing each node's `note`
@@ -865,6 +898,37 @@
     );
   }
 
+  /** The gradient the fade over a clipped note is painted with. Emitted only
+   *  when some note is clipped, so an untouched map exports byte for byte the
+   *  file it did before. */
+  const FADE_ID = 'um-note-fade';
+  function fadeDefs() {
+    return (
+      `<defs><linearGradient id="${FADE_ID}" x1="0" y1="0" x2="0" y2="1">` +
+      `<stop offset="0" stop-color="${C.noteFill}" stop-opacity="0"/>` +
+      `<stop offset="0.7" stop-color="${C.noteFill}" stop-opacity="1"/>` +
+      `</linearGradient></defs>`
+    );
+  }
+
+  /** Bottom edge of a bubble whose body did not fit: the last visible line
+   *  fades into the paper and an ellipsis says the note goes on. Drawn in SVG
+   *  rather than in the note's CSS so it survives wherever the sheet is shown,
+   *  and painted inside the border so the bubble keeps its outline. */
+  function fadeSvg(rect) {
+    const { x, y, w, h } = rect;
+    // pointer-events: the fade lies over the last line of the note, and a code
+    // block ending there must stay clickable (that click is what copies it).
+    return (
+      `<g pointer-events="none">` +
+      `<rect x="${r(x + 1)}" y="${r(y + h - FADE_H)}" width="${r(w - 2)}" ` +
+      `height="${r(FADE_H - 1)}" fill="url(#${FADE_ID})"/>` +
+      `<text x="${r(x + w / 2)}" y="${r(y + h - 8)}" text-anchor="middle" ` +
+      `dominant-baseline="central" fill="${C.leader}" ` +
+      `font-family="${esc(FONT_STACK)}" font-size="13">…</text></g>`
+    );
+  }
+
   /** UML-style note bubble: paper with a folded top-right corner, the folded
    *  flap, and the Markdown body in a <foreignObject>. */
   function bubbleSvg(b) {
@@ -877,7 +941,8 @@
       `<g><path d="${paper}" fill="${C.noteFill}" stroke="${C.noteStroke}" stroke-width="1"/>` +
       `<path d="${flap}" fill="${C.noteFlap}" stroke="${C.noteStroke}" stroke-width="1"/>` +
       `<foreignObject x="${r(x)}" y="${r(y)}" width="${r(w)}" height="${r(h)}">` +
-      `${b.note.xml}</foreignObject></g>`
+      `${b.note.xml}</foreignObject>` +
+      (b.note.clipped ? fadeSvg(b.rect) : '') + `</g>`
     );
   }
 
@@ -1014,6 +1079,7 @@
     // well, so that inlining this SVG into an HTML page — where <style> is raw
     // text and CDATA means nothing — leaves valid CSS either way.
     parts.push(`<style>/* <![CDATA[ */${NOTE_CSS}/* ]]> */</style>`);
+    if (scene.bubbles.some((b) => b.note.clipped)) parts.push(fadeDefs());
     parts.push(`<rect width="${width}" height="${height}" fill="${C.bg}"/>`);
     parts.push(footerSvg(project, width, height));
     parts.push(`<g transform="translate(${r(dx)},${r(dy)})">`);
